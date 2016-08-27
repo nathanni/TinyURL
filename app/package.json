@@ -1,0 +1,23 @@
+{
+  "name": "tinyurl",
+  "version": "1.0.0",
+  "description": "shorten that long URL into a tiny URL",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nathanni/TinyURL.git"
+  },
+  "author": "Nathan Ni",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/nathanni/TinyURL/issues"
+  },
+  "homepage": "https://github.com/nathanni/TinyURL#readme",
+  "dependencies": {
+    "body-parser": "^1.15.2",
+    "express": "^4.14.0"
+  }
+}
