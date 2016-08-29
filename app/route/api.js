@@ -15,6 +15,7 @@ router.post('/urls', jsonParser, function (req, res) {
     var longUrl = req.body.longUrl; //longUrl is from JSON
     if (!longUrl || longUrl.trim() == '') {
         res.status(404).send("No shortUrl is generated");
+        return;
     }
     var shortUrl = urlService.getShortUrl(longUrl,
         req.app.longToShortHash, req.app.shortToLongHash); ////express puts app into req
