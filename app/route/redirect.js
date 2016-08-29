@@ -12,7 +12,7 @@ router.get('*', function (req, res) {
     var longUrl = urlService.getLongUrl(shortUrl, req.app.shortToLongHash);
 
     if (longUrl == undefined) {
-        console.log("shortURL not found");
+        res.status(404).send('shortURL not found');
     }
 
 

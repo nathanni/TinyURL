@@ -1,0 +1,24 @@
+{
+  "name": "frontend",
+  "homepage": "https://github.com/nathanni/TinyURL",
+  "authors": [
+    "Nathan Ni <nathanoct@gmail.com>"
+  ],
+  "description": "TinyURL frontend",
+  "main": "index.html",
+  "moduleType": [],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "bootstrap": "~3.3.7",
+    "angular": "~1.5.8",
+    "angular-ui-router": "~0.3.1",
+    "angular-resource": "~1.5.8"
+  }
+}
