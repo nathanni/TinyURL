@@ -3,15 +3,19 @@
  */
 var express = require('express');
 var app = express();
+var mongoose = require('mongoose');
 
 //import router
 var apiRouter = require('./route/api');
 var redirectRouter = require('./route/redirect');
 var frontendRouter = require('./route/frontend');
 
+
+mongoose.connect('mongodb://scott:tiger@ds019756.mlab.com:19756/tinytinyurl');
+
 //global map simulate database
-app.longToShortHash = {};
-app.shortToLongHash = {};
+// app.longToShortHash = {};
+// app.shortToLongHash = {};
 
 
 app.use('/api', apiRouter);

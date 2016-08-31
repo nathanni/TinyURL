@@ -1,6 +1,8 @@
 /**
  * Created by Nathan on 8/27/2016.
  */
+var urlModel = require('../model/urlModel');
+
 var encode = [];
 
 var genCharArray = function (charA, charZ) {
@@ -19,29 +21,45 @@ encode = encode.concat(genCharArray('0', '9'));
 encode = encode.concat(genCharArray('a', 'z'));
 
 
-
-
-
-var getShortUrl = function (longUrl, longToShortHash, shortToLongHash) {
+var getShortUrl = function (longUrl, callback) {
 
     //to-do, 可以在front页面让用户选择不同协议
     if (longUrl.indexOf('http') === -1) {
         longUrl = 'http://' + longUrl;
     }
 
-    if (longToShortHash[longUrl] != null) {
-        return longToShortHash[longUrl];
-    }
+    urlModel.findOne({longUrl: longUrl}, function (err, url) {
+        if (err) return handleError(err);
+        else if (url) {
+            callback(url);
+        } else {
+            //when shorturl is generated, need to write to db
+            generateShortUrl(function (shortUrl) {
+                var url = new urlModel({shortUrl: shortUrl, longUrl: longUrl});
+                url.save();
+                callback(url);
+            });
+        }
+    });
 
-    var shortUrl = generateShortUrl(longToShortHash);
-    longToShortHash[longUrl] = shortUrl;
-    shortToLongHash[shortUrl] = longUrl;
-    return shortUrl;
+
+    // if (longToShortHash[longUrl] != null) {
+    //     return longToShortHash[longUrl];
+    // }
+    //
+    // var shortUrl = generateShortUrl(longToShortHash);
+    // longToShortHash[longUrl] = shortUrl;
+    // shortToLongHash[shortUrl] = longUrl;
+    // return shortUrl;
 };
 
 
-var generateShortUrl = function (longToShortHash) {
-    return convertTo62(Object.keys(longToShortHash).length); // way to get object's length in js
+var generateShortUrl = function (callback) {
+    urlModel.find({}, function (err, urls) {
+        if (err) return handleError(err);
+        callback(convertTo62(urls.length));
+    });
+    //return convertTo62(Object.keys(longToShortHash).length); // way to get object's length in js
 };
 
 var convertTo62 = function (num) {
@@ -54,8 +72,11 @@ var convertTo62 = function (num) {
     return result;
 };
 
-var getLongUrl = function (shortUrl, shortToLongHash) {
-    return shortToLongHash[shortUrl];
+var getLongUrl = function (shortUrl, callback) {
+    urlModel.findOne({shortUrl: shortUrl}, function (err, url) {
+        if (err) return handleError(err);
+        callback(url);
+    });
 };
 
 module.exports = {
