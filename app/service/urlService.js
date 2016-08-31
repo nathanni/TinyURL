@@ -2,6 +2,13 @@
  * Created by Nathan on 8/27/2016.
  */
 var urlModel = require('../model/urlModel');
+var redis = require('redis');
+
+//docker 再创建实例的时候会传入这两个参数
+var host = process.env.REDIS_PORT_6379_TCP_ADDR || '127.0.0.1';
+var port = process.env.REDIS_PORT_6379_TCP_PORT || '6379';
+
+var redisClient = redis.createClient(port, host);
 
 var encode = [];
 
@@ -28,16 +35,28 @@ var getShortUrl = function (longUrl, callback) {
         longUrl = 'http://' + longUrl;
     }
 
-    urlModel.findOne({longUrl: longUrl}, function (err, url) {
-        if (err) return handleError(err);
-        else if (url) {
-            callback(url);
+    redisClient.get(longUrl, function (err, shortUrl) {
+        if (shortUrl) {
+            console.log("byebye mongodb: getShortUrl");
+            callback({
+                longUrl: longUrl,
+                shortUrl: shortUrl
+            });
         } else {
-            //when shorturl is generated, need to write to db
-            generateShortUrl(function (shortUrl) {
-                var url = new urlModel({shortUrl: shortUrl, longUrl: longUrl});
-                url.save();
-                callback(url);
+            urlModel.findOne({longUrl: longUrl}, function (err, url) {
+                if (err) return handleError(err);
+                else if (url) {
+                    callback(url);
+                } else {
+                    //when shorturl is generated, need to write to db
+                    generateShortUrl(function (shortUrl) {
+                        var url = new urlModel({shortUrl: shortUrl, longUrl: longUrl});
+                        url.save();
+                        redisClient.set(shortUrl, longUrl);
+                        redisClient.set(longUrl, shortUrl);
+                        callback(url);
+                    });
+                }
             });
         }
     });
@@ -73,10 +92,23 @@ var convertTo62 = function (num) {
 };
 
 var getLongUrl = function (shortUrl, callback) {
-    urlModel.findOne({shortUrl: shortUrl}, function (err, url) {
-        if (err) return handleError(err);
-        callback(url);
+
+    redisClient.get(shortUrl, function (err, longUrl) {
+       if (longUrl) {
+           console.log("byebye mongodb: getLongUrl");
+           callback({
+               shortUrl: shortUrl,
+               longUrl: longUrl
+           });
+       } else {
+           urlModel.findOne({shortUrl: shortUrl}, function (err, url) {
+               if (err) return handleError(err);
+               callback(url);
+           });
+       }
     });
+
+
 };
 
 module.exports = {

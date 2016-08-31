@@ -7,7 +7,7 @@ var router = express.Router();
 var bodyParser = require('body-parser');
 var jsonParser = bodyParser.json(); //return middleware that only parse json. A new body object containing the parse data on req.
 
-//import url servie
+//import url service
 var urlService = require('../service/urlService');
 
 

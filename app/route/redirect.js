@@ -5,7 +5,7 @@ var express = require('express');
 var router = express.Router();
 var path = require('path');
 
-//import url servie
+//import url service
 var urlService = require('../service/urlService');
 
 router.get('*', function (req, res) {
