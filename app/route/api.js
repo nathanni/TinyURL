@@ -21,12 +21,6 @@ router.post('/urls', jsonParser, function (req, res) {
     urlService.getShortUrl(longUrl, function (url) {
         res.json(url);
     });
-    // var shortUrl = urlService.getShortUrl(longUrl,
-    //     req.app.longToShortHash, req.app.shortToLongHash); ////express puts app into req
-    // res.json({
-    //     shortUrl: shortUrl,
-    //     longUrl: longUrl
-    // });
 });
 
 router.get('/urls/:shortUrl', function (req, res) {

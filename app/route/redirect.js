@@ -17,9 +17,7 @@ router.get('*', function (req, res) {
             res.sendFile(path.join(__dirname, '../frontend/view', '404.html'));
         }
 
-
     });
-
 
 });
 

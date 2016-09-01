@@ -61,22 +61,13 @@ var getShortUrl = function (longUrl, callback) {
         }
     });
 
-
-    // if (longToShortHash[longUrl] != null) {
-    //     return longToShortHash[longUrl];
-    // }
-    //
-    // var shortUrl = generateShortUrl(longToShortHash);
-    // longToShortHash[longUrl] = shortUrl;
-    // shortToLongHash[shortUrl] = longUrl;
-    // return shortUrl;
 };
 
 
 var generateShortUrl = function (callback) {
     urlModel.find({}, function (err, urls) {
         if (err) return handleError(err);
-        callback(convertTo62(urls.length));
+        else callback(convertTo62(urls.length));
     });
     //return convertTo62(Object.keys(longToShortHash).length); // way to get object's length in js
 };
@@ -94,20 +85,23 @@ var convertTo62 = function (num) {
 var getLongUrl = function (shortUrl, callback) {
 
     redisClient.get(shortUrl, function (err, longUrl) {
-       if (longUrl) {
-           console.log("byebye mongodb: getLongUrl");
-           callback({
-               shortUrl: shortUrl,
-               longUrl: longUrl
-           });
-       } else {
-           urlModel.findOne({shortUrl: shortUrl}, function (err, url) {
-               if (err) return handleError(err);
-               redisClient.set(url.shortUrl, url.longUrl);
-               redisClient.set(url.longUrl, url.shortUrl);
-               callback(url);
-           });
-       }
+        if (longUrl) {
+            console.log("byebye mongodb: getLongUrl");
+            callback({
+                shortUrl: shortUrl,
+                longUrl: longUrl
+            });
+        } else {
+            urlModel.findOne({shortUrl: shortUrl}, function (err, url) {
+                if (err) return handleError(err);
+                else if (url) {
+                    redisClient.set(url.shortUrl, url.longUrl);
+                    redisClient.set(url.longUrl, url.shortUrl);
+                } else {
+                    callback(url);
+                }
+            });
+        }
     });
 
 
