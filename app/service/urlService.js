@@ -46,14 +46,14 @@ var getShortUrl = function (longUrl, callback) {
             urlModel.findOne({longUrl: longUrl}, function (err, url) {
                 if (err) return handleError(err);
                 else if (url) {
+                    redisClient.set(url.shortUrl, url.longUrl);
+                    redisClient.set(url.longUrl, url.shortUrl);
                     callback(url);
                 } else {
                     //when shorturl is generated, need to write to db
                     generateShortUrl(function (shortUrl) {
                         var url = new urlModel({shortUrl: shortUrl, longUrl: longUrl});
-                        url.save();
-                        redisClient.set(shortUrl, longUrl);
-                        redisClient.set(longUrl, shortUrl);
+                        url.save(); // save to mongoDB
                         callback(url);
                     });
                 }
@@ -103,6 +103,8 @@ var getLongUrl = function (shortUrl, callback) {
        } else {
            urlModel.findOne({shortUrl: shortUrl}, function (err, url) {
                if (err) return handleError(err);
+               redisClient.set(url.shortUrl, url.longUrl);
+               redisClient.set(url.longUrl, url.shortUrl);
                callback(url);
            });
        }
