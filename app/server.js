@@ -4,6 +4,7 @@
 var express = require('express');
 var app = express();
 var mongoose = require('mongoose');
+var userAgent = require('express-useragent');
 
 //import router
 var apiRouter = require('./route/api');
@@ -29,6 +30,8 @@ app.use('/view', express.static(__dirname + '/frontend/view'));
 
 //:shortUrl as param, represents for 任意字符串匹配
 app.use('/:shortUrl', redirectRouter);
+
+app.user(userAgent, express());
 
 
 app.listen(3000, function () {
