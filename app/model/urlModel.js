@@ -7,5 +7,5 @@ var urlSchema = new Schema({
     shortUrl: String
 });
 
-var urlModel = mongoose.model('urlModel', urlSchema);
-module.exports = urlModel;
+var UrlModel = mongoose.model('UrlModel', urlSchema);
+module.exports = UrlModel;

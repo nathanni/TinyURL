@@ -4,14 +4,13 @@
 var express = require('express');
 var router = express.Router();
 
-var bodyParser = require('body-parser');
-var jsonParser = bodyParser.json(); //return middleware that only parse json. A new body object containing the parse data on req.
 
 //import service
 var urlService = require('../service/urlService');
 var statsService = require('../service/statsService');
+var userService = require('../service/userService');
 
-router.post('/urls', jsonParser, function (req, res) {
+router.post('/urls', function (req, res) {
     var longUrl = req.body.longUrl; //longUrl is from JSON
     if (!longUrl || longUrl.trim() == '') {
         res.status(404).send("No shortUrl is generated");
@@ -38,6 +37,20 @@ router.get('/urls/:shortUrl/:info', function (req, res) {
     statsService.getUrlInfo(req.params.shortUrl, req.params.info, function (data) {
         res.json(data);
     });
+});
+
+
+
+//authentication
+//signup
+router.post('/signup', function (req, res) {
+    if (!req.body.username || !req.body.password) {
+        res.json({success: false, msg: 'Please enter username and password.'});
+    } else {
+        userService.signup(req.body.username, req.body.password, function (msg) {
+            res.json(msg);
+        });
+    }
 });
 
 module.exports = router;

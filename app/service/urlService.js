@@ -1,7 +1,7 @@
 /**
  * Created by Nathan on 8/27/2016.
  */
-var urlModel = require('../model/urlModel');
+var UrlModel = require('../model/urlModel');
 var redis = require('redis');
 
 //docker 再创建实例的时候会传入这两个参数
@@ -43,7 +43,7 @@ var getShortUrl = function (longUrl, callback) {
                 shortUrl: shortUrl
             });
         } else {
-            urlModel.findOne({longUrl: longUrl}, function (err, url) {
+            UrlModel.findOne({longUrl: longUrl}, function (err, url) {
                 if (err) return handleError(err);
                 else if (url) {
                     redisClient.set(url.shortUrl, url.longUrl);
@@ -52,7 +52,7 @@ var getShortUrl = function (longUrl, callback) {
                 } else {
                     //when shorturl is generated, need to write to db
                     generateShortUrl(function (shortUrl) {
-                        var url = new urlModel({shortUrl: shortUrl, longUrl: longUrl});
+                        var url = new UrlModel({shortUrl: shortUrl, longUrl: longUrl});
                         url.save(); // save to mongoDB
                         callback(url);
                     });
@@ -65,7 +65,7 @@ var getShortUrl = function (longUrl, callback) {
 
 
 var generateShortUrl = function (callback) {
-    urlModel.find({}, function (err, urls) {
+    UrlModel.find({}, function (err, urls) {
         if (err) return handleError(err);
         else callback(convertTo62(urls.length));
     });
@@ -92,7 +92,7 @@ var getLongUrl = function (shortUrl, callback) {
                 longUrl: longUrl
             });
         } else {
-            urlModel.findOne({shortUrl: shortUrl}, function (err, url) {
+            UrlModel.findOne({shortUrl: shortUrl}, function (err, url) {
                 if (err) return handleError(err);
                 else if (url) {
                     redisClient.set(url.shortUrl, url.longUrl);

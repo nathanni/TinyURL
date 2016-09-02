@@ -2,7 +2,7 @@
  * Created by Nathan on 9/1/16.
  */
 var geoip = require('geoip-lite');
-var requestModel = require('../model/requestModel');
+var RequestModel = require('../model/requestModel');
 
 var logRequest = function (shortUrl, req) {
     var reqInfo = {};
@@ -26,14 +26,14 @@ var logRequest = function (shortUrl, req) {
     reqInfo.timestamp = new Date();
     console.log(reqInfo.timestamp);
 
-    var request = new requestModel(reqInfo);
+    var request = new RequestModel(reqInfo);
     request.save();
 
 };
 
 var getUrlInfo = function (shortUrl, info, callback) {
     if (info === 'totalClicks') {
-        requestModel.count({shortUrl: shortUrl}, function (err, data) {
+        RequestModel.count({shortUrl: shortUrl}, function (err, data) {
             callback(data);
         });
         return;
@@ -67,7 +67,7 @@ var getUrlInfo = function (shortUrl, info, callback) {
     }
 
 
-    requestModel.aggregate([
+    RequestModel.aggregate([
         {
             $match: {
                 shortUrl: shortUrl
