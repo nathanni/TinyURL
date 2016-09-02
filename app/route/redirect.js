@@ -5,7 +5,7 @@ var express = require('express');
 var router = express.Router();
 var path = require('path');
 
-//import url service
+//import service
 var urlService = require('../service/urlService');
 var statsService = require('../service/statsService');
 

@@ -1,7 +1,7 @@
 /**
  * Created by Nathan on 8/27/2016.
  */
-var app = angular.module('tinyUrl', ['ui.router']);
+var app = angular.module('tinyUrl', ['ui.router', 'chart.js', 'ngResource']);
 
 
 app.config(function ($stateProvider, $urlRouterProvider) {

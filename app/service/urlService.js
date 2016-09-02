@@ -97,9 +97,8 @@ var getLongUrl = function (shortUrl, callback) {
                 else if (url) {
                     redisClient.set(url.shortUrl, url.longUrl);
                     redisClient.set(url.longUrl, url.shortUrl);
-                } else {
-                    callback(url);
                 }
+                callback(url);
             });
         }
     });

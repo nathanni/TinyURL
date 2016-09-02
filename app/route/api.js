@@ -7,9 +7,9 @@ var router = express.Router();
 var bodyParser = require('body-parser');
 var jsonParser = bodyParser.json(); //return middleware that only parse json. A new body object containing the parse data on req.
 
-//import url service
+//import service
 var urlService = require('../service/urlService');
-
+var statsService = require('../service/statsService');
 
 router.post('/urls', jsonParser, function (req, res) {
     var longUrl = req.body.longUrl; //longUrl is from JSON
@@ -31,6 +31,12 @@ router.get('/urls/:shortUrl', function (req, res) {
         } else {
             res.status(404).send("what????");
         }
+    });
+});
+
+router.get('/urls/:shortUrl/:info', function (req, res) {
+    statsService.getUrlInfo(req.params.shortUrl, req.params.info, function (data) {
+        res.json(data);
     });
 });
 
