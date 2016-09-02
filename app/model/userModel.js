@@ -16,6 +16,8 @@ var userSchema = new Schema({
     }
 });
 
+
+//save()之前的prepare工作, 对密码进行单向hash
 userSchema.pre('save', function (next) {
     var user = this;
     if (this.isModified('password') || this.isNew) {
@@ -36,6 +38,7 @@ userSchema.pre('save', function (next) {
     }
 });
 
+//比对密码, 比对hash值
 userSchema.methods.comparePassword = function (passw, cb) {
     bcrypt.compare(passw, this.password, function (err, isMatch) {
         if (err) {

@@ -8,17 +8,22 @@ var morgan = require('morgan');
 var mongoose = require('mongoose');
 var passport = require('passport');
 var config = require('./config/database');
-var jwt = require('jwt-simple');
 var port = process.env.PORT || 3000;
 var userAgent = require('express-useragent');
+
+// Use the passport package in our application
+app.use(passport.initialize());
+//apply passport strategy
+require('./config/passport')(passport);
+
+//mongoDb
+mongoose.connect(config.database);
+
 
 //import router
 var apiRouter = require('./route/api');
 var redirectRouter = require('./route/redirect');
 var frontendRouter = require('./route/frontend');
-
-//mongoDb
-mongoose.connect(config.database);
 
 
 //static resource
@@ -33,9 +38,6 @@ app.use(bodyParser.json()); //return middleware that only parse json. A new body
 
 // log to console
 app.use(morgan('dev'));
-
-// Use the passport package in our application
-app.use(passport.initialize());
 
 //wrap useragent info into req
 app.use(userAgent.express());

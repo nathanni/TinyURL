@@ -4,6 +4,7 @@
 var express = require('express');
 var router = express.Router();
 
+var passport = require('passport');
 
 //import service
 var urlService = require('../service/urlService');
@@ -47,10 +48,28 @@ router.post('/signup', function (req, res) {
     if (!req.body.username || !req.body.password) {
         res.json({success: false, msg: 'Please enter username and password.'});
     } else {
-        userService.signup(req.body.username, req.body.password, function (msg) {
-            res.json(msg);
+        userService.signup(req.body.username, req.body.password, function (ret) {
+            res.json(ret);
         });
     }
+});
+
+//signin
+router.post('/signin', function (req, res) {
+    if (!req.body.username || !req.body.password) {
+        res.json({success: false, msg: 'Please enter username and password.'});
+    } else {
+        userService.signin(req.body.username, req.body.password, function (ret) {
+            res.json(ret);
+        });
+    }
+});
+
+//authenticate, protected by passport
+router.get('/management', passport.authenticate('jwt', { session: false}), function (req, res) {
+    userService.validateToken(req.headers, function(statusCode, ret) {
+        res.status(statusCode).json(ret);
+    });
 });
 
 module.exports = router;
