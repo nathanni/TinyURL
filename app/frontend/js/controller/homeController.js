@@ -1,13 +1,49 @@
 /**
  * Created by Nathan on 8/28/2016.
  */
+angular.module('tinyUrl').controller('homeController', ['$scope','$uibModal', function ($scope, $uibModal) {
+    $scope.navView = 'nav';
+    $scope.mainView = 'main';
 
-angular.module('tinyUrl').controller('homeController', ['$scope', '$http', '$state', function ($scope, $http, $state) {
-    $scope.submit = function () {
-        $http.post('/api/urls', {
-            longUrl: $scope.longUrl
-        }).success(function (data) {
-            $state.go('urlInfo', {shortUrl: data.shortUrl});
+    var $ctrl = this;
+
+
+    $ctrl.animationsEnabled = true;
+
+    $ctrl.openSignup = function (size) {
+        var signupInstance = $uibModal.open({
+            animation: $ctrl.animationsEnabled,
+            ariaLabelledBy: 'modal-title',
+            ariaDescribedBy: 'modal-body',
+            templateUrl: '/view/user/signup.html',
+            controller: 'signupController',
+            controllerAs: '$ctrl',
+            size: size,
+            resolve: {}
         });
-    }
+
+    };
+
+    $ctrl.openLogin = function (size) {
+        var loginInstance = $uibModal.open({
+            animation: $ctrl.animationsEnabled,
+            ariaLabelledBy: 'modal-title',
+            ariaDescribedBy: 'modal-body',
+            templateUrl: '/view/user/login.html',
+            controller: 'loginController',
+            controllerAs: '$ctrl',
+            size: size,
+            resolve: {}
+        });
+
+    };
+
+
+
+
+
+
 }]);
+
+
+
