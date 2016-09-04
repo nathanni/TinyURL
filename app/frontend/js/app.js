@@ -16,17 +16,34 @@ app.config(function ($stateProvider, $urlRouterProvider) {
             views: {
                 '': {
                     templateUrl: '/view/home.html',
-                    controller: 'homeController as $ctrl'
+                    controller: 'homeController as $ctrl',
                 },
                 'nav@home': {
-                    templateUrl: '/view/nav.html'
+                    templateUrl: '/view/nav/guestNav.html',
+                    controller: 'guestNavController as $ctrl'
                 },
                 'main@home': {
-                    templateUrl: '/view/url/urlGuest.html',
-                    controller: 'urlGuestController'
+                    templateUrl: '/view/main/guestMain.html',
+                    controller: 'guestMainController'
                 }
-            }
-
+            },
+            allowAfterLogin: false,
+            allowAnonymous: true
+        })
+        .state('home.user', {
+            url: 'user',
+            views: {
+                'nav@home': {
+                    templateUrl: '/view/nav/userNav.html',
+                    controller: 'userNavController as $ctrl'
+                },
+                'main@home': {
+                    templateUrl: '/view/main/userMain.html',
+                    controller: 'userMainController'
+                }
+            },
+            allowAfterLogin: true,
+            allowAnonymous: false
         })
         .state('home.urlInfo', {
             url: 'urlInfo/:shortUrl',
@@ -35,7 +52,25 @@ app.config(function ($stateProvider, $urlRouterProvider) {
                     templateUrl: '/view/url/urlInfo.html',
                     controller: 'urlInfoController'
                 }
-            }
+            },
+            allowAfterLogin: false,
+            allowAnonymous: true
 
         })
-});
+})
+    .run(function ($rootScope, $state, authService, AUTH_EVENTS) {
+        $rootScope.$on('$stateChangeStart', function (event, next, nextParams, fromState) {
+            if (!authService.isAuthenticated()) {
+                if (!next.allowAnonymous) {
+                    event.preventDefault();
+                    $state.go('home');
+                }
+            } else {
+                authService.validate();
+                if (!next.allowAfterLogin) {
+                    event.preventDefault();
+                    $state.go('home.user');
+                }
+            }
+        });
+    });

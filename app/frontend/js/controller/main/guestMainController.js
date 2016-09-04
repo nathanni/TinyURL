@@ -1,7 +1,7 @@
 /**
- * Created by Nathan on 9/2/2016.
+ * Created by Nathan on 9/3/2016.
  */
-angular.module('tinyUrl').controller('urlGuestController', ['$scope', '$http', '$state', function ($scope, $http, $state) {
+angular.module('tinyUrl').controller('guestMainController', ['$scope', '$http', '$state', function ($scope, $http, $state) {
     $scope.submit = function () {
         $http.post('/api/urls', {
             longUrl: $scope.longUrl

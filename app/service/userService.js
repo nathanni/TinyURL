@@ -44,24 +44,22 @@ var signin = function(username, password, callback) {
     });
 };
 
-var validateToken = function (headers, callback) {
+var userdash = function (headers, callback) {
     var token = getToken(headers);
     if (token) {
-        //get user name
+        //get user
         var decoded = jwt.decode(token, config.secret);
-        callback(200, {success: true, msg: 'Welcome to management page ' + decoded.username + '!'});
-        //这里没必要在从数据库里面获得一次user, 因为passport已经验证过
-        // UserModel.findOne({
-        //     username: decoded.username
-        // }, function (err, user) {
-        //     if (err) throw err;
-        //
-        //     if (!user) {
-        //         callback(403, {success: false, msg: 'Authentication failed. User not found'});
-        //     } else {
-        //         callback(200, {success: true, msg: 'Welcome to management page ' + user.username + '!'});
-        //     }
-        // });
+        UserModel.findOne({
+            username: decoded.username
+        }, function (err, user) {
+            if (err) throw err;
+
+            if (!user) {
+                callback(403, {success: false, msg: 'Authentication failed. User not found'});
+            } else {
+                callback(200, {success: true, msg: 'Authentication validated successfully!', user: user});
+            }
+        });
     } else {
         callback(403, {success: false, msg: 'Authentication failed. No token provided'});
     }
@@ -81,8 +79,9 @@ var getToken = function (headers) {
 };
 
 
+
 module.exports = {
     signup: signup,
     signin: signin,
-    validateToken: validateToken
+    userdash: userdash
 };

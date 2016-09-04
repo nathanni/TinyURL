@@ -54,8 +54,8 @@ router.post('/signup', function (req, res) {
     }
 });
 
-//signin
-router.post('/signin', function (req, res) {
+//login
+router.post('/login', function (req, res) {
     if (!req.body.username || !req.body.password) {
         res.json({success: false, msg: 'Please enter username and password.'});
     } else {
@@ -65,10 +65,18 @@ router.post('/signin', function (req, res) {
     }
 });
 
-//authenticate, protected by passport
-router.get('/management', passport.authenticate('jwt', { session: false}), function (req, res) {
-    userService.validateToken(req.headers, function(statusCode, ret) {
+//get userdash info, protected by passport
+router.get('/userdash', passport.authenticate('jwt', {session: false}), function (req, res) {
+    userService.userdash(req.headers, function(statusCode, ret) {
         res.status(statusCode).json(ret);
+    });
+});
+
+//validate token for frontend
+router.get('/validate', passport.authenticate('jwt', {session: false}), function (req, res) {
+    res.status(200).json({
+        success: true,
+        msg: 'Authentication valid'
     });
 });
 

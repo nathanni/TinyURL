@@ -7,7 +7,6 @@ angular.module('tinyUrl').controller('homeController', ['$scope','$uibModal', fu
 
     var $ctrl = this;
 
-
     $ctrl.animationsEnabled = true;
 
     $ctrl.openSignup = function (size) {
@@ -15,7 +14,7 @@ angular.module('tinyUrl').controller('homeController', ['$scope','$uibModal', fu
             animation: $ctrl.animationsEnabled,
             ariaLabelledBy: 'modal-title',
             ariaDescribedBy: 'modal-body',
-            templateUrl: '/view/user/signup.html',
+            templateUrl: '/view/authentication/signup.html',
             controller: 'signupController',
             controllerAs: '$ctrl',
             size: size,
@@ -23,26 +22,6 @@ angular.module('tinyUrl').controller('homeController', ['$scope','$uibModal', fu
         });
 
     };
-
-    $ctrl.openLogin = function (size) {
-        var loginInstance = $uibModal.open({
-            animation: $ctrl.animationsEnabled,
-            ariaLabelledBy: 'modal-title',
-            ariaDescribedBy: 'modal-body',
-            templateUrl: '/view/user/login.html',
-            controller: 'loginController',
-            controllerAs: '$ctrl',
-            size: size,
-            resolve: {}
-        });
-
-    };
-
-
-
-
-
-
 }]);
 
 
