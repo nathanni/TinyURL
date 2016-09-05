@@ -9,6 +9,12 @@ angular.module('tinyUrl').controller('userNavController', ['$rootScope','$scope'
             $scope.username = $rootScope.user.username;
         });
 
+        // $scope.test = function () {
+        //     authService.userdash().then(function (data) {
+        //         $rootScope.user = data.user;
+        //         $scope.username = $rootScope.user.username;
+        //     });
+        // };
 
         $scope.logout = function () {
             authService.logout();

@@ -72,12 +72,6 @@ router.get('/userdash', passport.authenticate('jwt', {session: false}), function
     });
 });
 
-//validate token for frontend
-router.get('/validate', passport.authenticate('jwt', {session: false}), function (req, res) {
-    res.status(200).json({
-        success: true,
-        msg: 'Authentication valid'
-    });
-});
+
 
 module.exports = router;

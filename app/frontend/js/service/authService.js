@@ -65,26 +65,11 @@ angular.module('tinyUrl')
                 $http.get(API_ENDPOINT.url + '/userdash').then(function(result) {
                     if (result.data.success) {
                         resolve(result.data);
-                    } else {
-                        destroyUserCredentials();
-                        $state.go('home');
                     }
                 });
             });
         };
 
-        var validate = function() {
-            return $q(function(resolve) {
-                $http.get(API_ENDPOINT.url + '/validate').then(function(result) {
-                    if (result.data.success) {
-                        resolve(result.data.msg);
-                    } else {
-                        destroyUserCredentials();
-                        $state.go('home');
-                    }
-                });
-            });
-        };
 
         var logout = function() {
             destroyUserCredentials();
@@ -97,7 +82,6 @@ angular.module('tinyUrl')
             register: register,
             logout: logout,
             userdash: userdash,
-            validate: validate,
             isAuthenticated: function() {return isAuthenticated;},
         };
     }])
@@ -106,7 +90,7 @@ angular.module('tinyUrl')
         return {
             responseError: function (response) {
                 $rootScope.$broadcast({
-                    401: AUTH_EVENTS.notAuthenticated,
+                    401: AUTH_EVENTS.notAuthenticated
                 }[response.status], response);
                 return $q.reject(response);
             }

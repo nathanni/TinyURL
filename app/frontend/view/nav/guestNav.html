@@ -5,7 +5,10 @@
         </div>
         <div>
             <ul class="nav navbar-nav">
-                <li class="active"><a href="#"><span class="glyphicon glyphicon-home"></span> Home</a></li>
+                <li ng-class="{active: isActive('/')}"><a href="#"><span class="glyphicon glyphicon-home"></span> Home</a></li>
+            </ul>
+            <ul class="nav navbar-nav" ng-if="isActive('/urlInfo')">
+                <li class="active"><a href="javascript:void(0)"><span class="glyphicon glyphicon-stats"></span> Stats</a></li>
             </ul>
             <ul class="nav navbar-nav navbar-right nav">
                 <li><a href="javascript:void(0)" ng-click="$ctrl.openSignup()"><span class="glyphicon glyphicon-pencil"></span> Sign Up</a></li>

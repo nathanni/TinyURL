@@ -16,11 +16,10 @@ app.config(function ($stateProvider, $urlRouterProvider) {
             views: {
                 '': {
                     templateUrl: '/view/home.html',
-                    controller: 'homeController as $ctrl',
+                    controller: 'homeController as $ctrl'
                 },
                 'nav@home': {
-                    templateUrl: '/view/nav/guestNav.html',
-                    controller: 'guestNavController as $ctrl'
+                    templateUrl: '/view/nav/guestNav.html'
                 },
                 'main@home': {
                     templateUrl: '/view/main/guestMain.html',
@@ -35,11 +34,22 @@ app.config(function ($stateProvider, $urlRouterProvider) {
             views: {
                 'nav@home': {
                     templateUrl: '/view/nav/userNav.html',
-                    controller: 'userNavController as $ctrl'
+                    controller: 'userNavController'
                 },
                 'main@home': {
                     templateUrl: '/view/main/userMain.html',
                     controller: 'userMainController'
+                }
+            },
+            allowAfterLogin: true,
+            allowAnonymous: false
+        })
+        .state('home.user.urlInfo', {
+            url: '/urlInfo/:shortUrl',
+            views: {
+                'main@home': {
+                    templateUrl: '/view/url/urlInfo.html',
+                    controller: 'urlInfoController'
                 }
             },
             allowAfterLogin: true,
@@ -66,11 +76,21 @@ app.config(function ($stateProvider, $urlRouterProvider) {
                     $state.go('home');
                 }
             } else {
-                authService.validate();
+                //authService.validate();
                 if (!next.allowAfterLogin) {
                     event.preventDefault();
                     $state.go('home.user');
                 }
             }
         });
-    });
+    })
+    .controller('appCtrl', ['$scope', '$rootScope', '$state', 'authService', 'AUTH_EVENTS', 'REQUIRE_RELOGIN',
+        function ($scope, $rootScope, $state, authService, AUTH_EVENTS, REQUIRE_RELOGIN) {
+            $scope.$on(AUTH_EVENTS.notAuthenticated ,function (event) {
+                authService.logout();
+                //broadcast session is invalid and go to the login page
+                $rootScope.$broadcast(REQUIRE_RELOGIN.sessionInvalid);
+                $state.go('home');
+            });
+
+        }]);

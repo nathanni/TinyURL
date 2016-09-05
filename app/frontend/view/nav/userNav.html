@@ -5,13 +5,16 @@
         </div>
         <div>
             <ul class="nav navbar-nav">
-                <li class="active"><a href="#"><span class="glyphicon glyphicon-home"></span> Home</a></li>
+                <li ng-class="{active: isActive('/user')}"><a href="#/user"><span class="glyphicon glyphicon-home"></span> Home</a></li>
+            </ul>
+            <ul class="nav navbar-nav" ng-if="isActive('/user/urlInfo')">
+                <li class="active"><a href="javascript:void(0)"><span class="glyphicon glyphicon-stats"></span> Stats</a></li>
             </ul>
             <ul class="nav navbar-nav navbar-right" >
                 <li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" href="javascrip:void(0)">
                     <span class="glyphicon glyphicon-credit-card"></span> {{username}}<span class="caret"></span></a>
                     <ul class="dropdown-menu">
-                        <li><a href="javascript:void(0)""><span class="glyphicon glyphicon-user"></span> Profile</a></li>
+                        <li><a href="javascript:void(0)"><span class="glyphicon glyphicon-user"></span> Profile</a></li>
                         <li><a href="javascript:void(0)"><span class="glyphicon glyphicon-cog"></span> Setting</a></li>
                         <li><a href="javascript:void(0)" ng-click="logout()"><span class="glyphicon glyphicon-off"></span> Log out</a></li>
                     </ul>
