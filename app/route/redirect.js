@@ -9,12 +9,14 @@ var path = require('path');
 var urlService = require('../service/urlService');
 var statsService = require('../service/statsService');
 
+const dummy = '______dummy$#%';
+
 router.get('*', function (req, res) {
     var shortUrl = req.originalUrl.slice(1); //similar to substring(1)
-    urlService.getLongUrl(shortUrl, function (url) {
+    urlService.getLongUrl(dummy, shortUrl, function (url) {
         if (url) {
             res.redirect(url.longUrl);
-            statsService.logRequest(shortUrl, req);
+            statsService.logRequest(shortUrl, url.user, req);
         } else {
             res.sendFile(path.join(__dirname, '../frontend/view', '404.html'));
         }

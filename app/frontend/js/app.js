@@ -45,7 +45,7 @@ app.config(function ($stateProvider, $urlRouterProvider) {
             allowAnonymous: false
         })
         .state('home.user.urlInfo', {
-            url: '/urlInfo/:shortUrl',
+            url: '/urlInfo/:user/:shortUrl',
             views: {
                 'main@home': {
                     templateUrl: '/view/url/urlInfo.html',
@@ -67,6 +67,26 @@ app.config(function ($stateProvider, $urlRouterProvider) {
             allowAnonymous: true
 
         })
+        .state('home.error', {
+            url: 'error',
+            views: {
+                'main@home': {
+                    templateUrl: '/view/no_permission.html'
+                }
+            },
+            allowAfterLogin: false,
+            allowAnonymous: true
+        })
+        .state('home.user.error', {
+            url: '/error',
+            views: {
+                'main@home': {
+                    templateUrl: '/view/no_permission.html'
+                }
+            },
+            allowAfterLogin: true,
+            allowAnonymous: false
+        })
 })
     .run(function ($rootScope, $state, authService, AUTH_EVENTS) {
         $rootScope.$on('$stateChangeStart', function (event, next, nextParams, fromState) {
@@ -84,13 +104,23 @@ app.config(function ($stateProvider, $urlRouterProvider) {
             }
         });
     })
-    .controller('appCtrl', ['$scope', '$rootScope', '$state', 'authService', 'AUTH_EVENTS', 'REQUIRE_RELOGIN',
-        function ($scope, $rootScope, $state, authService, AUTH_EVENTS, REQUIRE_RELOGIN) {
+    .controller('appCtrl', ['$scope', '$rootScope', '$state', 'authService', 'AUTH_EVENTS', 'REQUIRE_RELOGIN', 'PERMISSION_EVENTS',
+        function ($scope, $rootScope, $state, authService, AUTH_EVENTS, REQUIRE_RELOGIN, PERMISSION_EVENTS) {
             $scope.$on(AUTH_EVENTS.notAuthenticated ,function (event) {
                 authService.logout();
                 //broadcast session is invalid and go to the login page
                 $rootScope.$broadcast(REQUIRE_RELOGIN.sessionInvalid);
                 $state.go('home');
             });
+
+            //404 没有访问权限的事件
+            $scope.$on(PERMISSION_EVENTS.noPermission, function (event) {
+                if(!authService.isAuthenticated()) {
+                    $state.go('home.error');
+                } else {
+                    $state.go('home.user.error');
+                }
+
+            })
 
         }]);

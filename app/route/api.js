@@ -5,40 +5,108 @@ var express = require('express');
 var router = express.Router();
 
 var passport = require('passport');
+var config = require('../config/database'); // get secret
+var jwt = require('jwt-simple'); //encode decode jwt
 
 //import service
 var urlService = require('../service/urlService');
 var statsService = require('../service/statsService');
 var userService = require('../service/userService');
 
+const guest = '______guest$#%';
+const dummy = '______dummy$#%';
+
+//guest 生成shortUrl from long
 router.post('/urls', function (req, res) {
     var longUrl = req.body.longUrl; //longUrl is from JSON
     if (!longUrl || longUrl.trim() == '') {
-        res.status(404).send("No shortUrl is generated");
-        return;
+        res.status(400).send("No shortUrl is generated");
+        return false;
     }
     //数据库读写是IO操作, 得改用callback
-    urlService.getShortUrl(longUrl, function (url) {
+    urlService.getShortUrl(guest, longUrl, function (url) {
+        res.json(url);
+    });
+});
+//user 生成shortUrl from long
+router.post('/user/urls', passport.authenticate('jwt', {session: false}), function (req, res) {
+    var user = req.body.user;
+    var longUrl = req.body.longUrl;
+    if (!longUrl || longUrl.trim() == '') {
+        res.status(400).send("No shortUrl is generated");
+        return false;
+    }
+    urlService.getShortUrl(user, longUrl, function (url) {
         res.json(url);
     });
 });
 
+
+
+//guest 获得longUrl from short
 router.get('/urls/:shortUrl', function (req, res) {
     var shortUrl = req.params.shortUrl;
-    urlService.getLongUrl(shortUrl, function (url) {
+    urlService.getLongUrl(guest, shortUrl, function (url) {
         if (url) {
             res.json(url);
         } else {
-            res.status(404).send("what????");
+            res.status(404).send("no permission");
+        }
+    });
+});
+//user 获得longUrl from short
+router.get('/user/urls/:shortUrl', passport.authenticate('jwt', {session: false}), function (req, res) {
+    var shortUrl = req.params.shortUrl;
+
+    var token = getToken(req.headers);
+    if (token) {
+        var user = jwt.decode(token, config.secret).username;
+    } else {
+        var user = dummy;
+    }
+
+    urlService.getLongUrl(user, shortUrl, function (url) {
+        if (url) {
+            res.json(url);
+        } else {
+            res.status(404).send("no permission");
         }
     });
 });
 
+
+
+
+//guest 获得shortUrl stats
 router.get('/urls/:shortUrl/:info', function (req, res) {
+    statsService.getUrlInfo(req.params.shortUrl, req.params.info,function (data) {
+        res.json(data);
+    });
+});
+//user 获得shortUrl stats
+router.get('/user/urls/:shortUrl/:info', passport.authenticate('jwt', {session: false}), function (req, res) {
     statsService.getUrlInfo(req.params.shortUrl, req.params.info, function (data) {
         res.json(data);
     });
 });
+
+
+// function to get token from request.header
+var getToken = function (headers) {
+    if (headers && headers.authorization) {
+        var parted = headers.authorization.split(' ');
+        if (parted.length === 2) {
+            return parted[1];
+        } else {
+            return null;
+        }
+    } else {
+        return null;
+    }
+};
+
+
+
 
 
 
@@ -54,6 +122,7 @@ router.post('/signup', function (req, res) {
     }
 });
 
+
 //login
 router.post('/login', function (req, res) {
     if (!req.body.username || !req.body.password) {
@@ -65,13 +134,13 @@ router.post('/login', function (req, res) {
     }
 });
 
+
 //get userdash info, protected by passport
 router.get('/userdash', passport.authenticate('jwt', {session: false}), function (req, res) {
-    userService.userdash(req.headers, function(statusCode, ret) {
+    userService.userdash(req.headers, function (statusCode, ret) {
         res.status(statusCode).json(ret);
     });
 });
-
 
 
 module.exports = router;

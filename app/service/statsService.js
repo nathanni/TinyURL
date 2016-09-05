@@ -4,9 +4,10 @@
 var geoip = require('geoip-lite');
 var RequestModel = require('../model/requestModel');
 
-var logRequest = function (shortUrl, req) {
+var logRequest = function (shortUrl, user, req) {
     var reqInfo = {};
     reqInfo.shortUrl = shortUrl;
+    reqInfo.createByUser = user;
     reqInfo.referer = req.headers.referer || 'Unknown';
     reqInfo.platform = req.useragent.platform || 'Unknown';
     reqInfo.browser = req.useragent.browser || 'Unknown';
@@ -24,7 +25,6 @@ var logRequest = function (shortUrl, req) {
     }
 
     reqInfo.timestamp = new Date();
-    console.log(reqInfo.timestamp);
 
     var request = new RequestModel(reqInfo);
     request.save();

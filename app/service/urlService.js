@@ -28,31 +28,33 @@ encode = encode.concat(genCharArray('0', '9'));
 encode = encode.concat(genCharArray('a', 'z'));
 
 
-var getShortUrl = function (longUrl, callback) {
+var getShortUrl = function (user, longUrl, callback) {
 
     //to-do, 可以在front页面让用户选择不同协议
     if (longUrl.indexOf('http') === -1) {
         longUrl = 'http://' + longUrl;
     }
 
-    redisClient.get(longUrl, function (err, shortUrl) {
+    redisClient.hget(user, longUrl, function (err, shortUrl) {
         if (shortUrl) {
             console.log("byebye mongodb: getShortUrl");
             callback({
+                user: user,
                 longUrl: longUrl,
                 shortUrl: shortUrl
             });
         } else {
-            UrlModel.findOne({longUrl: longUrl}, function (err, url) {
+            UrlModel.findOne({user: user, longUrl: longUrl}, function (err, url) {
                 if (err) return handleError(err);
                 else if (url) {
-                    redisClient.set(url.shortUrl, url.longUrl);
-                    redisClient.set(url.longUrl, url.shortUrl);
+                    redisClient.hset(url.shortUrl, 'longUrl', url.longUrl);
+                    redisClient.hset(url.shortUrl, 'user', url.user); //记录shortURL belongs 哪个user
+                    redisClient.hset(url.user, url.longUrl, url.shortUrl);
                     callback(url);
                 } else {
                     //when shorturl is generated, need to write to db
                     generateShortUrl(function (shortUrl) {
-                        var url = new UrlModel({shortUrl: shortUrl, longUrl: longUrl});
+                        var url = new UrlModel({user: user, shortUrl: shortUrl, longUrl: longUrl});
                         url.save(); // save to mongoDB
                         callback(url);
                     });
@@ -65,9 +67,9 @@ var getShortUrl = function (longUrl, callback) {
 
 
 var generateShortUrl = function (callback) {
-    UrlModel.find({}, function (err, urls) {
+    UrlModel.count({}, function (err, count) {
         if (err) return handleError(err);
-        else callback(convertTo62(urls.length));
+        else callback(convertTo62(count));
     });
     //return convertTo62(Object.keys(longToShortHash).length); // way to get object's length in js
 };
@@ -82,23 +84,42 @@ var convertTo62 = function (num) {
     return result;
 };
 
-var getLongUrl = function (shortUrl, callback) {
+var getLongUrl = function (user, shortUrl, callback) {
 
-    redisClient.get(shortUrl, function (err, longUrl) {
-        if (longUrl) {
+    redisClient.hgetall(shortUrl, function (err, obj) {
+        if (err) return handleError(err);
+        if (obj) {
             console.log("byebye mongodb: getLongUrl");
-            callback({
-                shortUrl: shortUrl,
-                longUrl: longUrl
-            });
+            // not dummy from redirect
+            // not user equals
+            // not user is user and obj.user is guest
+            if (user != '______dummy$#%' && obj.user != user && !(user != '______guest$#%' && obj.user === '______guest$#%')) {
+                callback();
+            } else {
+                callback({
+                    user: obj.user,
+                    shortUrl: shortUrl,
+                    longUrl: obj.longUrl
+                });
+            }
+
+
         } else {
             UrlModel.findOne({shortUrl: shortUrl}, function (err, url) {
                 if (err) return handleError(err);
                 else if (url) {
-                    redisClient.set(url.shortUrl, url.longUrl);
-                    redisClient.set(url.longUrl, url.shortUrl);
+                    redisClient.hset(url.shortUrl, 'longUrl', url.longUrl);
+                    redisClient.hset(url.shortUrl, 'user', url.user); //记录shortURL belongs 哪个user
+                    redisClient.hset(url.user, url.longUrl, url.shortUrl);
+                    if(user != '______dummy$#%' && url.user != user && !(user != '______guest$#%' && url.user === '______guest$#%')) {
+                        callback();
+                    } else {
+                        callback(url);
+                    }
+                } else {
+                    callback();
                 }
-                callback(url);
+
             });
         }
     });

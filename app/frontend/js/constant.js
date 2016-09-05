@@ -12,4 +12,8 @@ angular.module('tinyUrl')
 
     .constant('REQUIRE_RELOGIN', {
         sessionInvalid: 'session is invalid'
+    })
+
+    .constant('PERMISSION_EVENTS', {
+        noPermission: 'no-permission'
     });
