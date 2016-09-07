@@ -14,8 +14,6 @@ var port = process.env.REDIS_PORT_6379_TCP_PORT || '6379';
 var redisClient = redis.createClient(port, host);
 
 
-
-
 //get or generate short url from long url
 var getShortUrl = function (user, longUrl, callback) {
 
@@ -78,7 +76,6 @@ var getShortUrl = function (user, longUrl, callback) {
 };
 
 
-
 //get urlinfo from short url
 var getLongUrl = function (user, shortUrl, callback) {
 
@@ -138,14 +135,14 @@ var getUrls = function (user, callback) {
 
 //delete url
 var deleteUrl = function (user, shortUrl, callback) {
-    UrlModel.findOneAndRemove({user: user, shortUrl:shortUrl}, function (err, url) {
+    UrlModel.findOneAndRemove({user: user, shortUrl: shortUrl}, function (err, url) {
         if (!err && url) {
             //need to delete cache
-            redisClient.hdel(user, url.longUrl );
+            redisClient.hdel(user, url.longUrl);
             redisClient.hdel(shortUrl, 'longUrl');
             redisClient.hdel(shortUrl, 'user');
             redisClient.hdel(shortUrl, 'createdTime');
-            console.log(url);
+            console.log("url is removed: " + url);
             callback({success: true});
         } else {
             callback({success: false});
@@ -154,7 +151,7 @@ var deleteUrl = function (user, shortUrl, callback) {
 
     //delete from requestModel DB
     RequestModel.remove({shortUrl: shortUrl}, function (err) {
-        if(err) throw err;
+        if (err) throw err;
     })
 
 };
