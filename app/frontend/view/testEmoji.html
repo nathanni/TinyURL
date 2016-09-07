@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="//cdn.jsdelivr.net/emojione/2.2.6/lib/js/emojione.min.js"></script>
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/emojione/2.2.6/assets/css/emojione.min.css"/>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+
+
+    <!--<script type="text/javascript">-->
+        <!--// #################################################-->
+        <!--// # Optional-->
+
+        <!--// default is PNG but you may also use SVG-->
+        <!--emojione.imageType = 'svg';-->
+
+        <!--// default is ignore ASCII smileys like :) but you can easily turn them on-->
+        <!--emojione.ascii = true;-->
+
+        <!--// if you want to host the images somewhere else-->
+        <!--// you can easily change the default paths-->
+        <!--emojione.imagePathPNG = './assets/png/';-->
+        <!--emojione.imagePathSVG = './assets/svg/';-->
+
+        <!--// #################################################-->
+    <!--</script>-->
+    <script type="text/javascript">
+        function convert() {
+            var input = document.getElementById('inputText').value;
+            var output = emojione.shortnameToImage(input);
+            document.getElementById('outputText').innerHTML = output;
+        }
+    </script>
+
+
+</head>
+<body>
+
+<div class="column-1-2 input">
+    <h3>Input:</h3>
+    <input type="text" id="inputText" name="inputText" value=":smile:"/>
+    <input type="button" value="Convert" onclick="convert()"/>
+</div>
+
+<div class="column-1-2 output">
+    <h3>Output:</h3>
+    <p id="outputText"></p>
+    <script type="text/javascript">
+        function convert() {
+            var input = document.getElementById('inputText').value;
+            var output = emojione.shortnameToImage(input);
+            document.getElementById('outputText').innerHTML = output;
+        }
+    </script>
+</div>
+
+</div>
+</body>
+</html>

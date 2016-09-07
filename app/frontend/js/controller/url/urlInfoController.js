@@ -20,7 +20,8 @@ angular.module('tinyUrl').controller('urlInfoController', ['$scope', 'fromUser',
                 $scope.shortUrl = data.shortUrl;
                 $scope.longUrl = data.longUrl;
                 $scope.createdTime = new Date(data.createdTime);
-                $scope.user = data.user === '______guest$#%' ? 'public' : data.user; // hide real guest's name
+                //这里不能定义$scope.user, 不然会读取到$rootScope.user
+                $scope.createdByuser = data.user === '______guest$#%' ? 'public' : data.user; // hide real guest's name
                 $scope.shortUrlToShow = $location.protocol() + "://" +
                     $location.host() + ":" +
                     $location.port() + "/" +
@@ -79,7 +80,7 @@ angular.module('tinyUrl').controller('urlInfoController', ['$scope', 'fromUser',
                         $scope['lineData'].push(info.count);
                     });
                 });
-        }
+        };
 
         $scope.getTime('hour');
     }])
