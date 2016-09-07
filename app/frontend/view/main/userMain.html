@@ -25,7 +25,7 @@
                 </th>
                 <th>Short URL</th>
                 <th>Analytics</th>
-                <th colspan="2">Manage ShortURL</th>
+                <th colspan="2">Manage</th>
             </tr>
             </thead>
             <tbody>
@@ -34,8 +34,8 @@
                 <td><p ng-bind="url.createdTime | date: dateFormat"></p></td>
                 <td><a href="{{prefix + url.shortUrl}}">{{prefix + url.shortUrl}}</a></td>
                 <td><a ng-href="#/user/urlInfo/{{url.shortUrl}}"><span class="glyphicon glyphicon-stats"></span> Stats</a></td>
-                <td><a href="#"><span class="glyphicon glyphicon-file"></span> Edit</a></td>
-                <td><a href="#"><span class="glyphicon glyphicon-remove"></span> Delete</a></td>
+                <td><a href="#"><span class="glyphicon glyphicon-file"></span> Edit</a>&nbsp;
+                <a href="#" ng-click="delete(url.shortUrl)"><span class="glyphicon glyphicon-remove"></span> Delete</a></td>
             </tr>
             </tbody>
         </table>

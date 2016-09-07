@@ -43,7 +43,7 @@ router.post('/user/urls', passport.authenticate('jwt', {session: false}), functi
 
 
 //user get all urls info
-router.get('/user/urls',passport.authenticate('jwt', {session: false}), function (req, res) {
+router.get('/user/urls', passport.authenticate('jwt', {session: false}), function (req, res) {
 
     var user = getUser(req);
 
@@ -56,14 +56,10 @@ router.get('/user/urls',passport.authenticate('jwt', {session: false}), function
 router.delete('/user/urls/:shortUrl', passport.authenticate('jwt', {session: false}), function (req, res) {
     var user = getUser(req);
     var shortUrl = req.params.shortUrl;
-    urlService.deleteUrl(user, shortUrl, function () {
-
+    urlService.deleteUrl(user, shortUrl, function (data) {
+        res.json(data);
     })
 });
-
-
-
-
 
 
 //guest 获得longUrl from short
@@ -93,11 +89,9 @@ router.get('/user/urls/:shortUrl', passport.authenticate('jwt', {session: false}
 });
 
 
-
-
 //guest 获得shortUrl stats
 router.get('/urls/:shortUrl/:info', function (req, res) {
-    statsService.getUrlInfo(req.params.shortUrl, req.params.info,function (data) {
+    statsService.getUrlInfo(req.params.shortUrl, req.params.info, function (data) {
         res.json(data);
     });
 });
@@ -124,7 +118,7 @@ var getToken = function (headers) {
 };
 
 //get user from token in request.headers.Authorization
-var getUser = function(req) {
+var getUser = function (req) {
     var token = getToken(req.headers);
     if (token) {
         var user = jwt.decode(token, config.secret).username;
@@ -133,9 +127,6 @@ var getUser = function(req) {
     }
     return user;
 };
-
-
-
 
 
 //authentication

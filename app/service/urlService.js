@@ -2,6 +2,8 @@
  * Created by Nathan on 8/27/2016.
  */
 var UrlModel = require('../model/urlModel');
+var SequenceModel = require('../model/sequenceModel');
+var RequestModel = require('../model/requestModel');
 var redis = require('redis');
 
 //docker 再创建实例的时候会传入这两个参数
@@ -90,10 +92,26 @@ var getShortUrl = function (user, longUrl, callback) {
 
 
 var generateShortUrl = function (callback) {
-    UrlModel.count({}, function (err, count) {
+
+
+    SequenceModel.findOne({name: 'tinyurl'}, function (err, data) {
+        var sequentialId = 0;
         if (err) throw err;
-        else callback(convertTo62(count));
+        if (data) {
+            sequentialId = data.sequentialId;
+        }
+        //要保证更新成功了在生成short url
+        SequenceModel.findOneAndUpdate({name: 'tinyurl'}, {sequentialId: sequentialId + 1}, {upsert: true}, function (err) {
+            if (err) throw err;
+            callback(convertTo62(sequentialId));
+        });
+
     });
+
+    // UrlModel.count({}, function (err, count) {
+    //     if (err) throw err;
+    //     else callback(convertTo62(count));
+    // });
     //return convertTo62(Object.keys(longToShortHash).length); // way to get object's length in js
 };
 
@@ -160,10 +178,33 @@ var getUrls = function (user, callback) {
     })
 };
 
+var deleteUrl = function (user, shortUrl, callback) {
+    UrlModel.findOneAndRemove({user: user, shortUrl:shortUrl}, function (err, url) {
+        if (!err && url) {
+            //need to delete cache
+            redisClient.hdel(user, url.longUrl );
+            redisClient.hdel(shortUrl, 'longUrl');
+            redisClient.hdel(shortUrl, 'user');
+            redisClient.hdel(shortUrl, 'createdTime');
+            console.log(url);
+            callback({success: true});
+        } else {
+            callback({success: false});
+        }
+    });
+
+    //delete from requestModel DB
+    RequestModel.remove({shortUrl: shortUrl}, function (err) {
+        if(err) throw err;
+    })
+
+};
+
 
 module.exports = {
     getShortUrl: getShortUrl,
     getLongUrl: getLongUrl,
-    getUrls: getUrls
+    getUrls: getUrls,
+    deleteUrl: deleteUrl
 };
 

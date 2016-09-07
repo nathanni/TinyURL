@@ -4,7 +4,27 @@
 var app = angular.module('tinyUrl', ['ui.router', 'chart.js', 'ngResource', 'ui.bootstrap', 'ngAnimate']);
 
 
-app.config(function ($stateProvider, $urlRouterProvider) {
+app.config(['$httpProvider','$stateProvider','$urlRouterProvider',function ($httpProvider, $stateProvider, $urlRouterProvider) {
+
+
+
+    //解决Angularjs在IE底下的cache issue, 禁用IE cache
+    //initialize get if not there
+    if (!$httpProvider.defaults.headers.get) {
+        $httpProvider.defaults.headers.get = {};
+    }
+
+    // Answer edited to include suggestions from comments
+    // because previous version of code introduced browser-related errors
+
+    //disable IE ajax request caching
+    $httpProvider.defaults.headers.get['If-Modified-Since'] = 'Mon, 26 Jul 1997 05:00:00 GMT';
+    // extra
+    $httpProvider.defaults.headers.get['Cache-Control'] = 'no-cache';
+    $httpProvider.defaults.headers.get['Pragma'] = 'no-cache';
+
+
+
 
     //match all default case, will go to '#/'
     $urlRouterProvider.otherwise('/');
@@ -97,8 +117,8 @@ app.config(function ($stateProvider, $urlRouterProvider) {
             allowAfterLogin: true,
             allowAnonymous: false
         })
-})
-    .run(function ($rootScope, $state, authService, AUTH_EVENTS) {
+}])
+    .run(function ($rootScope, $state, authService) {
         $rootScope.$on('$stateChangeStart', function (event, next, nextParams, fromState) {
             if (!authService.isAuthenticated()) {
                 if (!next.allowAnonymous) {
