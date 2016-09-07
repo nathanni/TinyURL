@@ -45,11 +45,16 @@ app.config(function ($stateProvider, $urlRouterProvider) {
             allowAnonymous: false
         })
         .state('home.user.urlInfo', {
-            url: '/urlInfo/:user/:shortUrl',
+            url: '/urlInfo/:shortUrl',
             views: {
                 'main@home': {
                     templateUrl: '/view/url/urlInfo.html',
-                    controller: 'urlInfoController'
+                    controller: 'urlInfoController',
+                    resolve: {
+                        fromUser: function () {
+                            return true;
+                        }
+                    }
                 }
             },
             allowAfterLogin: true,
@@ -60,7 +65,12 @@ app.config(function ($stateProvider, $urlRouterProvider) {
             views: {
                 'main@home': {
                     templateUrl: '/view/url/urlInfo.html',
-                    controller: 'urlInfoController'
+                    controller: 'urlInfoController',
+                    resolve: {
+                        fromUser: function () {
+                            return false;
+                        }
+                    }
                 }
             },
             allowAfterLogin: false,

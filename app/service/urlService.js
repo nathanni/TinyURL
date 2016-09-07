@@ -36,31 +36,54 @@ var getShortUrl = function (user, longUrl, callback) {
     }
 
     redisClient.hget(user, longUrl, function (err, shortUrl) {
-        if (shortUrl) {
-            console.log("byebye mongodb: getShortUrl");
-            callback({
-                user: user,
-                longUrl: longUrl,
-                shortUrl: shortUrl
-            });
-        } else {
+
+        var mongoCallback = function () {
             UrlModel.findOne({user: user, longUrl: longUrl}, function (err, url) {
-                if (err) return handleError(err);
+                if (err) throw err;
                 else if (url) {
                     redisClient.hset(url.shortUrl, 'longUrl', url.longUrl);
                     redisClient.hset(url.shortUrl, 'user', url.user); //记录shortURL belongs 哪个user
+                    redisClient.hset(url.shortUrl, 'createdTime', url.createdTime);
                     redisClient.hset(url.user, url.longUrl, url.shortUrl);
                     callback(url);
                 } else {
                     //when shorturl is generated, need to write to db
                     generateShortUrl(function (shortUrl) {
-                        var url = new UrlModel({user: user, shortUrl: shortUrl, longUrl: longUrl});
+                        var url = new UrlModel({
+                            user: user,
+                            createdTime: new Date(),
+                            shortUrl: shortUrl,
+                            longUrl: longUrl
+                        });
                         url.save(); // save to mongoDB
                         callback(url);
                     });
                 }
             });
+        };
+
+
+        //用FLAG保证了如果cache出错, 还一定会走mongodb
+        if (!err && shortUrl) {
+            redisClient.hget(shortUrl, 'createdTime', function (err, createdTime) {
+                if (!err && createdTime) {
+                    console.log("byebye mongodb: getShortUrl");
+                    callback({
+                        user: user,
+                        createdTime: createdTime,
+                        longUrl: longUrl,
+                        shortUrl: shortUrl
+                    });
+                } else {
+                    mongoCallback();
+                }
+            });
+
+        } else {
+            mongoCallback();
         }
+
+
     });
 
 };
@@ -68,7 +91,7 @@ var getShortUrl = function (user, longUrl, callback) {
 
 var generateShortUrl = function (callback) {
     UrlModel.count({}, function (err, count) {
-        if (err) return handleError(err);
+        if (err) throw err;
         else callback(convertTo62(count));
     });
     //return convertTo62(Object.keys(longToShortHash).length); // way to get object's length in js
@@ -87,8 +110,7 @@ var convertTo62 = function (num) {
 var getLongUrl = function (user, shortUrl, callback) {
 
     redisClient.hgetall(shortUrl, function (err, obj) {
-        if (err) return handleError(err);
-        if (obj) {
+        if (!err && obj) {
             console.log("byebye mongodb: getLongUrl");
             // not dummy from redirect
             // not user equals
@@ -98,6 +120,7 @@ var getLongUrl = function (user, shortUrl, callback) {
             } else {
                 callback({
                     user: obj.user,
+                    createdTime: obj.createdTime,
                     shortUrl: shortUrl,
                     longUrl: obj.longUrl
                 });
@@ -106,12 +129,13 @@ var getLongUrl = function (user, shortUrl, callback) {
 
         } else {
             UrlModel.findOne({shortUrl: shortUrl}, function (err, url) {
-                if (err) return handleError(err);
+                if (err) throw err;
                 else if (url) {
                     redisClient.hset(url.shortUrl, 'longUrl', url.longUrl);
                     redisClient.hset(url.shortUrl, 'user', url.user); //记录shortURL belongs 哪个user
+                    redisClient.hset(url.shortUrl, 'createdTime', url.createdTime);
                     redisClient.hset(url.user, url.longUrl, url.shortUrl);
-                    if(user != '______dummy$#%' && url.user != user && !(user != '______guest$#%' && url.user === '______guest$#%')) {
+                    if (user != '______dummy$#%' && url.user != user && !(user != '______guest$#%' && url.user === '______guest$#%')) {
                         callback();
                     } else {
                         callback(url);
@@ -127,8 +151,19 @@ var getLongUrl = function (user, shortUrl, callback) {
 
 };
 
+//to-do cache
+var getUrls = function (user, callback) {
+    UrlModel.find({user: user}, function (err, urls) {
+        if (err) throw err;
+
+        callback(urls);
+    })
+};
+
+
 module.exports = {
     getShortUrl: getShortUrl,
-    getLongUrl: getLongUrl
+    getLongUrl: getLongUrl,
+    getUrls: getUrls
 };
 

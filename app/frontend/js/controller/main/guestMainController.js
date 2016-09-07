@@ -7,7 +7,6 @@ angular.module('tinyUrl').controller('guestMainController', ['$scope', '$http', 
             $http.post('/api/urls', {
                 longUrl: $scope.longUrl
             }).success(function (data) {
-                console.log(data);
                 $state.go('home.urlInfo', {shortUrl: data.shortUrl});
             });
         }

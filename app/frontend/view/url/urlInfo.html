@@ -1,21 +1,33 @@
 <div class="row">
-    <div class="col-md-4 col-md-offset-2">
+    <div class="col-md-6 col-md-offset-2">
         <div class="row">
-            <h4>Your long URL is: </h4>
-            <a ng-href="{{longUrl}}" target="_blank">{{longUrl}}</a>
+            <div class="col-md-4">
+                <h4>Your long URL is: </h4>
+                <a ng-href="{{longUrl}}" target="_blank">{{longUrl}}</a>
+            </div>
+            <div class="col-md-4">
+                <h4>Created Time: </h4>
+                <p ng-bind="createdTime | date:dateFormat"></p>
+            </div>
         </div>
         <div class="row">
-            <h4>Your short URL is: </h4>
-            <a ng-href="{{shortUrlToShow}}" target="_blank">{{shortUrlToShow}}</a>
+            <div class="col-md-4">
+                <h4>Your short URL is: </h4>
+                <a ng-href="{{shortUrlToShow}}" target="_blank">{{shortUrlToShow}}</a>
+            </div>
+            <div class="col-md-4">
+                <h4>Created By User: </h4>
+                <p>{{user}}</p>
+            </div>
         </div>
     </div>
-    <div class="col-md-3">
+    <div class="col-md-2">
         <div class="panel panel-info">
             <div class="panel-heading">
-                Total Clicks
+                <b>Total Clicks<b>
             </div>
             <div class="panel-body">
-                {{totalClicks }}
+                <b>{{totalClicks }}</b>
             </div>
         </div>
     </div>
@@ -27,7 +39,8 @@
         <div class="panel panel-default">
             <div class="panel-heading">
                 Click for the past:
-                <a href="javascript:void(0);" ng-click="getTime('hour')" ng-class="{'text-muted': time ==='hour'}">Hour</a>
+                <a href="javascript:void(0);" ng-click="getTime('hour')"
+                   ng-class="{'text-muted': time ==='hour'}">Hour</a>
                 <a href="javascript:void(0);" ng-click="getTime('day')" ng-class="{'text-muted': time ==='day'}">Day</a>
                 <a href="javascript:void(0);" ng-click="getTime('month')" ng-class="{'text-muted': time ==='month'}">Month</a>
             </div>

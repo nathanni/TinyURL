@@ -1,20 +1,26 @@
 /**
  * Created by Nathan on 8/28/2016.
  */
-angular.module('tinyUrl').controller('urlInfoController', ['$scope', '$http', '$location', '$stateParams',
-    function ($scope, $http, $location, $stateParams) {
+angular.module('tinyUrl').controller('urlInfoController', ['$scope', 'fromUser', '$http', '$location', '$stateParams',
+    function ($scope,fromUser, $http, $location, $stateParams) {
 
-        if ($stateParams.user) {
+
+
+        if (fromUser) {
             var api = '/api/user/urls/';
 
         } else {
             var api = '/api/urls/';
         }
 
+        $scope.dateFormat = 'MMM d, yyyy hh:mm:ss a';
+
         $http.get(api + $stateParams.shortUrl)
             .success(function (data) {
                 $scope.shortUrl = data.shortUrl;
                 $scope.longUrl = data.longUrl;
+                $scope.createdTime = new Date(data.createdTime);
+                $scope.user = data.user === '______guest$#%' ? 'public' : data.user; // hide real guest's name
                 $scope.shortUrlToShow = $location.protocol() + "://" +
                     $location.host() + ":" +
                     $location.port() + "/" +

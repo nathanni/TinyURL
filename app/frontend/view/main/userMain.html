@@ -16,23 +16,26 @@
             <thead>
             <tr>
                 <th>Original URL</th>
-                <th>Created</th>
+                <th>
+                    <a href="javascript:void(0)" ng-click="reverseSort = !reverseSort">
+                        Created
+                        <span ng-if="reverseSort" class="glyphicon glyphicon-chevron-down"></span>
+                        <span ng-if="!reverseSort" class="glyphicon glyphicon-chevron-up"></span>
+                    </a>
+                </th>
                 <th>Short URL</th>
-                <th>All Clicks</th>
+                <th>Analytics</th>
+                <th colspan="2">Manage ShortURL</th>
             </tr>
             </thead>
             <tbody>
-            <tr>
-                <td>test</td>
-                <td>test</td>
-                <td>test</td>
-                <td>test</td>
-            </tr>
-            <tr>
-                <td>test</td>
-                <td>test</td>
-                <td>test</td>
-                <td>test</td>
+            <tr ng-repeat="url in urls | orderBy: 'createdTime':reverseSort">
+                <td><a ng-href="{{url.longUrl}}">{{url.longUrl}}</a></td>
+                <td><p ng-bind="url.createdTime | date: dateFormat"></p></td>
+                <td><a href="{{prefix + url.shortUrl}}">{{prefix + url.shortUrl}}</a></td>
+                <td><a ng-href="#/user/urlInfo/{{url.shortUrl}}"><span class="glyphicon glyphicon-stats"></span> Stats</a></td>
+                <td><a href="#"><span class="glyphicon glyphicon-file"></span> Edit</a></td>
+                <td><a href="#"><span class="glyphicon glyphicon-remove"></span> Delete</a></td>
             </tr>
             </tbody>
         </table>

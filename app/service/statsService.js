@@ -7,7 +7,7 @@ var RequestModel = require('../model/requestModel');
 var logRequest = function (shortUrl, user, req) {
     var reqInfo = {};
     reqInfo.shortUrl = shortUrl;
-    reqInfo.createByUser = user;
+    reqInfo.createdByUser = user;
     reqInfo.referer = req.headers.referer || 'Unknown';
     reqInfo.platform = req.useragent.platform || 'Unknown';
     reqInfo.browser = req.useragent.browser || 'Unknown';
@@ -87,6 +87,7 @@ var getUrlInfo = function (shortUrl, info, callback) {
             }
         }
     ], function (err, data) {
+        if (err) throw err;
         callback(data);
     });
 };
