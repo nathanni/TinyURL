@@ -2,34 +2,21 @@
  * Created by Nathan on 8/27/2016.
  */
 var UrlModel = require('../model/urlModel');
-var SequenceModel = require('../model/sequenceModel');
 var RequestModel = require('../model/requestModel');
+var urlHash = require('./urlHash');
 var redis = require('redis');
 
+
+//redis config
 //docker 再创建实例的时候会传入这两个参数
 var host = process.env.REDIS_PORT_6379_TCP_ADDR || '127.0.0.1';
 var port = process.env.REDIS_PORT_6379_TCP_PORT || '6379';
-
 var redisClient = redis.createClient(port, host);
 
-var encode = [];
-
-var genCharArray = function (charA, charZ) {
-    var arr = [];
-    var i = charA.charCodeAt(0);
-    var j = charZ.charCodeAt(0);
-
-    for (; i <= j; i++) {
-        arr.push(String.fromCharCode(i));
-    }
-    return arr;
-};
-
-encode = encode.concat(genCharArray('A', 'Z'));
-encode = encode.concat(genCharArray('0', '9'));
-encode = encode.concat(genCharArray('a', 'z'));
 
 
+
+//get or generate short url from long url
 var getShortUrl = function (user, longUrl, callback) {
 
     //to-do, 可以在front页面让用户选择不同协议
@@ -50,10 +37,10 @@ var getShortUrl = function (user, longUrl, callback) {
                     callback(url);
                 } else {
                     //when shorturl is generated, need to write to db
-                    generateShortUrl(function (shortUrl) {
+                    urlHash.generateShortUrl(longUrl, function (shortUrl, createdTime) {
                         var url = new UrlModel({
                             user: user,
-                            createdTime: new Date(),
+                            createdTime: new Date(createdTime),
                             shortUrl: shortUrl,
                             longUrl: longUrl
                         });
@@ -91,40 +78,8 @@ var getShortUrl = function (user, longUrl, callback) {
 };
 
 
-var generateShortUrl = function (callback) {
 
-
-    SequenceModel.findOne({name: 'tinyurl'}, function (err, data) {
-        var sequentialId = 0;
-        if (err) throw err;
-        if (data) {
-            sequentialId = data.sequentialId;
-        }
-        //要保证更新成功了在生成short url
-        SequenceModel.findOneAndUpdate({name: 'tinyurl'}, {sequentialId: sequentialId + 1}, {upsert: true}, function (err) {
-            if (err) throw err;
-            callback(convertTo62(sequentialId));
-        });
-
-    });
-
-    // UrlModel.count({}, function (err, count) {
-    //     if (err) throw err;
-    //     else callback(convertTo62(count));
-    // });
-    //return convertTo62(Object.keys(longToShortHash).length); // way to get object's length in js
-};
-
-var convertTo62 = function (num) {
-    var result = '';
-    do {
-        result = encode[num % 62] + result;
-        num = Math.floor(num / 62);
-    } while (num);
-
-    return result;
-};
-
+//get urlinfo from short url
 var getLongUrl = function (user, shortUrl, callback) {
 
     redisClient.hgetall(shortUrl, function (err, obj) {
@@ -169,6 +124,8 @@ var getLongUrl = function (user, shortUrl, callback) {
 
 };
 
+
+//get all urls
 //to-do cache
 var getUrls = function (user, callback) {
     UrlModel.find({user: user}, function (err, urls) {
@@ -178,6 +135,8 @@ var getUrls = function (user, callback) {
     })
 };
 
+
+//delete url
 var deleteUrl = function (user, shortUrl, callback) {
     UrlModel.findOneAndRemove({user: user, shortUrl:shortUrl}, function (err, url) {
         if (!err && url) {
