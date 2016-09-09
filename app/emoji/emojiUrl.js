@@ -4,6 +4,7 @@
 
 var dictionary = require('./dictionary');
 var emojione = require('../node_modules/emojione/lib/js/emojione.js');
+var UrlModel = require('../model/urlModel');
 
 var generateEmojiUrl = function (shortUrl, callback) {
 
@@ -15,7 +16,7 @@ var generateEmojiUrl = function (shortUrl, callback) {
     var suffix = '';
 
     //随机组装prefix and suffix
-    for(var i = 0; i < 3; i++) {
+    for (var i = 0; i < 3; i++) {
         var randomPrefix = Math.floor((Math.random() * dictionary.prefix.length));
         var randomSuffix = Math.floor((Math.random() * dictionary.suffix.length));
         prefix += dictionary.prefix[randomPrefix];
@@ -32,39 +33,49 @@ var generateEmojiUrl = function (shortUrl, callback) {
 var generateShortUrlFromEmoji = function (orgUrl, callback) {
 
 
+    //to-do deal with normal url
     try {
         orgUrl = decodeURIComponent(orgUrl);
     } catch (e) {
         callback();
     }
 
-
-    var split = orgUrl.split(/([\uD800-\uDBFF][\uDC00-\uDFFF])/);
-
-    if (split.length < 2) {
-        callback(orgUrl);
-    } else {
+    var shortNames = emojione.toShort(orgUrl);
 
 
-        var arr = [];
-        for (var i = 0; i < split.length; i++) {
-            var char = split[i];
-            if (char !== "") {
-                arr.push(char);
-            }
+    //to-do cache
+    UrlModel.findOne({emojiUrl: shortNames}, function (err, url) {
+        if (err) throw err;
+        else if(url) {
+            callback(url.shortUrl);
+        } else {
+            callback();
         }
 
-        var shortUrl = '';
+    });
 
-        for (var i = 0; i < arr.length; i++) {
-            var shortName = emojione.toShort(arr[i]);
-            if (dictionary.emojiToCode[shortName]) {
-                shortUrl += dictionary.emojiToCode[shortName];
-            }
-        }
-
-        callback(shortUrl);
-    }
+    // var split = orgUrl.split(/([\uD800-\uDBFF][\uDC00-\uDFFF])/);
+    // if (split.length < 2) {
+    //     callback(orgUrl);
+    // } else {
+    //     var arr = [];
+    //     for (var i = 0; i < split.length; i++) {
+    //         var char = split[i];
+    //         if (char !== "") {
+    //             arr.push(char);
+    //         }
+    //     }
+    //
+    //     var shortUrl = '';
+    //     for (var i = 0; i < arr.length; i++) {
+    //         var shortName = emojione.toShort(arr[i]);
+    //         if (dictionary.emojiToCode[shortName]) {
+    //             shortUrl += dictionary.emojiToCode[shortName];
+    //         }
+    //     }
+    //
+    //     callback(shortUrl);
+    // }
 
 
 };
