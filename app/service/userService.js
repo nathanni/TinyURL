@@ -2,6 +2,8 @@ var config = require('../config/database'); // get secret
 var jwt = require('jwt-simple'); //encode decode jwt
 
 var UserModel = require('../model/userModel');
+var errorHandler = require('./errorHandler');
+
 
 
 var signup = function (username, password, callback) {
@@ -26,14 +28,15 @@ var signin = function(username, password, callback) {
     UserModel.findOne( {
        username: username
     }, function (err, user) {
-        if (err) throw err;
+        if (err) errorHandler.handleError(err, callback);
 
         if (!user) {
             callback({success: false, msg: 'Authentication failed. User not found.'});
         } else {
             //调用compare方法, 比较用户输入密码的hash是否和数据库里面存的相等
             user.comparePassword(password, function (err, isMatch) {
-                if (isMatch && !err) {
+                if (err) errorHandler.handleError(err, callback);
+                else if (isMatch) {
                     var token = jwt.encode(user, config.secret);
                     callback({success: true, token: 'JWT ' + token});
                 } else {
@@ -52,9 +55,9 @@ var userdash = function (headers, callback) {
         UserModel.findOne({
             username: decoded.username
         }, function (err, user) {
-            if (err) throw err;
+            if (err) errorHandler.handleError(err, callback);
 
-            if (!user) {
+            else if (!user) {
                 callback(403, {success: false, msg: 'Authentication failed. User not found'});
             } else {
                 callback(200, {success: true, msg: 'Authentication validated successfully!', user: user});

@@ -44,9 +44,7 @@ router.post('/user/urls', passport.authenticate('jwt', {session: false}), functi
 
 //user get all urls info
 router.get('/user/urls', passport.authenticate('jwt', {session: false}), function (req, res) {
-
     var user = getUser(req);
-
     urlService.getUrls(user, function (urls) {
         res.json(urls);
     })

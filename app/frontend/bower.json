@@ -21,6 +21,8 @@
     "angular-ui-router": "~0.3.1",
     "angular-resource": "~1.5.8",
     "angular-animate": "^1.5.8",
-    "jquery": "^3.1.0"
+    "jquery": "^3.1.0",
+    "angular-sanitize": "^1.5.8",
+    "ngclipboard": "^1.1.1"
   }
 }

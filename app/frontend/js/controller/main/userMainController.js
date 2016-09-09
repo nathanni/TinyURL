@@ -8,17 +8,30 @@ angular.module('tinyUrl').controller('userMainController', ['$window', '$locatio
 
         //get all urls in list
 
-        $http.get('/api/user/urls')
-            .success(function (data) {
-                $scope.urls = data;
-            });
 
 
-        $scope.dateFormat = 'MMM d, yyyy hh:mm:ss a';
+        var getUrls = function () {
+            $http.get('/api/user/urls')
+                .success(function (data) {
+                    $scope.urls = data;
+                    emojione.imageType = 'svg';
+                    $scope.urls.forEach(function (url) {
+                        url.emojiUrlToShow = emojione.shortnameToImage(url.emojiUrl);
+                        url.emojiUrlToClick = emojione.shortnameToUnicode(url.emojiUrl);
+                    });
+                });
+        };
+
+
+        getUrls();
 
         $scope.prefix = $location.protocol() + "://" +
             $location.host() + ":" +
             $location.port() + "/";
+
+        $scope.dateFormat = 'MMM d, yyyy hh:mm';
+
+
 
 
         $scope.reverseSort = true;  //descending as default
@@ -44,10 +57,7 @@ angular.module('tinyUrl').controller('userMainController', ['$window', '$locatio
                         } else {
                             console.log('delete fail');
                         }
-                        $http.get('/api/user/urls')
-                            .success(function (data) {
-                                $scope.urls = data;
-                            });
+                        getUrls();
                     });
             }
         }

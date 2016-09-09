@@ -3,6 +3,8 @@
  */
 var geoip = require('geoip-lite');
 var RequestModel = require('../model/requestModel');
+var errorHandler = require('./errorHandler');
+
 
 var logRequest = function (shortUrl, user, req) {
     var reqInfo = {};
@@ -34,7 +36,8 @@ var logRequest = function (shortUrl, user, req) {
 var getUrlInfo = function (shortUrl, info, callback) {
     if (info === 'totalClicks') {
         RequestModel.count({shortUrl: shortUrl}, function (err, data) {
-            callback(data);
+            if (err) errorHandler.handleError(err, callback);
+            else callback(data);
         });
         return;
     }
@@ -87,8 +90,8 @@ var getUrlInfo = function (shortUrl, info, callback) {
             }
         }
     ], function (err, data) {
-        if (err) throw err;
-        callback(data);
+        if (err) errorHandler.handleError(err, callback);
+        else callback(data);
     });
 };
 

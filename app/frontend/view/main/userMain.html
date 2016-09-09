@@ -11,7 +11,7 @@
 </div>
 <br>
 <div class="row">
-    <div class="col-md-10 col-md-offset-1">
+    <div class="col-md-12">
         <table class="table table-hover">
             <thead>
             <tr>
@@ -24,18 +24,28 @@
                     </a>
                 </th>
                 <th>Short URL</th>
+                <th>Emoji URL</th>
                 <th>Analytics</th>
-                <th colspan="2">Manage</th>
+                <th>Manage</th>
             </tr>
             </thead>
             <tbody>
             <tr ng-repeat="url in urls | orderBy: 'createdTime':reverseSort">
-                <td><a ng-href="{{url.longUrl}}">{{url.longUrl}}</a></td>
+                <td style="word-wrap: break-word;min-width: 160px;max-width: 300px;"><a ng-href="{{url.longUrl}}">{{url.longUrl}}</a>
+                </td>
                 <td><p ng-bind="url.createdTime | date: dateFormat"></p></td>
                 <td><a href="{{prefix + url.shortUrl}}">{{prefix + url.shortUrl}}</a></td>
-                <td><a ng-href="#/user/urlInfo/{{url.shortUrl}}"><span class="glyphicon glyphicon-stats"></span> Stats</a></td>
-                <td><a href="#"><span class="glyphicon glyphicon-file"></span> Edit</a>&nbsp;
-                <a href="#" ng-click="delete(url.shortUrl)"><span class="glyphicon glyphicon-remove"></span> Delete</a></td>
+                <td><a href="{{prefix + url.emojiUrlToClick}}" ng-bind-html="url.emojiUrlToShow"></a>&nbsp;&nbsp;&nbsp;&nbsp;
+                    <button class="btn btn-success btn-xs" ngclipboard
+                            data-clipboard-text="{{prefix + url.emojiUrlToClick}}">
+                        <span class="glyphicon glyphicon-scissors" aria-hidden="true"></span> Copy
+                    </button>
+                </td>
+                <td><a ng-href="#/user/urlInfo/{{url.shortUrl}}"><span class="glyphicon glyphicon-stats"></span>
+                    Stats</a></td>
+                <td><a href="#"><span class="glyphicon glyphicon-file"></span></a>&nbsp;
+                    <a href="#" ng-click="delete(url.shortUrl)"><span class="glyphicon glyphicon-remove"></span></a>
+                </td>
             </tr>
             </tbody>
         </table>

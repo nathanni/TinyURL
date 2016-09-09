@@ -2,7 +2,7 @@
  * Created by Nathan on 9/7/2016.
  */
 //need to be persistent in db in the future
-var numberToEmoji = {
+var codeToEmoji = {
     "A": ":grinning:",
     "B": ":smile_cat:",
     "C": ":joy:",
@@ -39,7 +39,7 @@ var numberToEmoji = {
     "7": ":tennis:",
     "8": ":violin:",
     "9": ":horse_racing:",
-    "a": ":water_polo:",
+    "a": ":beer:",
     "b": ":bow_and_arrow:",
     "c": ":blue_car:",
     "d": ":motorcycle:",
@@ -56,18 +56,18 @@ var numberToEmoji = {
     "o": ":flag_us:",
     "p": ":baby_tone1:",
     "q": ":lifter_tone4:",
-    "r": ":pregnant_woman_tone1:",
-    "s": ":clown:",
-    "t": ":shopping_cart:",
+    "r": ":key:",
+    "s": ":turtle:",
+    "t": ":tokyo_tower:",
     "u": ":tongue:",
     "v": ":eyes:",
-    "w": ":earth_americas:",
+    "w": ":ramen:",
     "x": ":evergreen_tree:",
     "y": ":sushi:",
     "z": ":underage:"
 };
 
-var EmojiToNumber = {
+var emojiToCode = {
     ":grinning:": "A",
     ":smile_cat:": "B",
     ":joy:": "C",
@@ -104,7 +104,7 @@ var EmojiToNumber = {
     ":tennis:": "7",
     ":violin:": "8",
     ":horse_racing:": "9",
-    ":water_polo:": "a",
+    ":beer:": "a",
     ":bow_and_arrow:": "b",
     ":blue_car:": "c",
     ":motorcycle:": "d",
@@ -121,13 +121,102 @@ var EmojiToNumber = {
     ":flag_us:": "o",
     ":baby_tone1:": "p",
     ":lifter_tone4:": "q",
-    ":pregnant_woman_tone1:": "r",
-    ":clown:": "s",
-    ":shopping_cart:": "t",
+    ":key:": "r",
+    ":turtle:": "s",
+    ":tokyo_tower:": "t",
     ":tongue:": "u",
     ":eyes:": "v",
-    ":earth_americas:": "w",
+    ":ramen:": "w",
     ":evergreen_tree:": "x",
     ":sushi:": "y",
     ":underage:": "z"
+};
+
+var prefix = [
+    ":thinking:",
+    ":alien:",
+    ":muscle:",
+    ":bikini:",
+    ":lips:",
+    ":dancer:",
+    ":ring:",
+    ":dagger:",
+    ":santa:",
+    ":pig_nose:",
+    ":hatching_chick:",
+    ":octopus:",
+    ":panda_face:",
+    ":snail:",
+    ":feet:",
+    ":elephant:",
+    ":tropical_fish:",
+    ":apple:",
+    ":pear:",
+    ":hamburger:",
+    ":taco:",
+    ":strawberry:",
+    ":cheese:",
+    ":burrito:",
+    ":baby_bottle:",
+    ":fried_shrimp:",
+    ":lollipop:",
+    ":doughnut:",
+    ":unamused:",
+    ":persevere:",
+    ":point_right_tone5:",
+    ":flag_kr:",
+    ":flag_it:"
+
+];
+
+var suffix = [
+    ":basketball:",
+    ":saxophone:",
+    ":headphones:",
+    ":musical_score:",
+    ":red_car:",
+    ":race_car:",
+    ":rotating_light:",
+    ":metro:",
+    ":watch:",
+    ":keyboard:",
+    ":hammer:",
+    ":stopwatch:",
+    ":sparkling_heart:",
+    ":globe_with_meridians:",
+    ":free:",
+    ":loop:",
+    ":white_check_mark:",
+    ":atm:",
+    ":yin_yang:",
+    ":100:",
+    ":flag_ac:",
+    ":flag_jp:",
+    ":flag_ca:",
+    ":flag_br:",
+    ":flag_hk:",
+    ":flag_nl:",
+    ":flag_gb:",
+    ":woman_tone5:",
+    ":man_tone1:",
+    ":older_man_tone1:",
+    ":pray_tone2:",
+    ":point_left_tone1:",
+    ":clap_tone2:",
+    ":camera:",
+    ":pill:",
+    ":sleeping:",
+    ":yum:",
+    ":thumbsup_tone1:",
+    ":speak_no_evil:",
+    ":bee:"
+    
+
+];
+
+module.exports = {
+    codeToEmoji: codeToEmoji,
+    emojiToCode: emojiToCode,
+    prefix: prefix,
+    suffix: suffix
 };

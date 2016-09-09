@@ -2,8 +2,7 @@
  * Created by Nathan on 8/28/2016.
  */
 angular.module('tinyUrl').controller('urlInfoController', ['$scope', 'fromUser', '$http', '$location', '$stateParams',
-    function ($scope,fromUser, $http, $location, $stateParams) {
-
+    function ($scope, fromUser, $http, $location, $stateParams) {
 
 
         if (fromUser) {
@@ -15,17 +14,24 @@ angular.module('tinyUrl').controller('urlInfoController', ['$scope', 'fromUser',
 
         $scope.dateFormat = 'MMM d, yyyy hh:mm:ss a';
 
+        var urlPrefix = $location.protocol() + "://" +
+            $location.host() + ":" +
+            $location.port() + "/";
+
         $http.get(api + $stateParams.shortUrl)
             .success(function (data) {
                 $scope.shortUrl = data.shortUrl;
+                $scope.emojiUrl = data.emojiUrl;
+                emojione.imageType = 'png';
+                $scope.emojiUrlToShow = emojione.shortnameToImage($scope.emojiUrl);//emojiOne
                 $scope.longUrl = data.longUrl;
                 $scope.createdTime = new Date(data.createdTime);
                 //这里不能定义$scope.user, 不然会读取到$rootScope.user
                 $scope.createdByuser = data.user === '______guest$#%' ? 'public' : data.user; // hide real guest's name
-                $scope.shortUrlToShow = $location.protocol() + "://" +
-                    $location.host() + ":" +
-                    $location.port() + "/" +
-                    $scope.shortUrl;
+                $scope.shortUrlToShow = urlPrefix + $scope.shortUrl;
+                $scope.emojiUrlToShowSmall = emojione.shortnameToUnicode($scope.emojiUrl);
+                $scope.emojiUrlToClick = urlPrefix + $scope.emojiUrlToShowSmall;
+
             });
 
 

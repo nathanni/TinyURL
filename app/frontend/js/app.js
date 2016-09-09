@@ -1,12 +1,28 @@
 /**
  * Created by Nathan on 8/27/2016.
  */
-var app = angular.module('tinyUrl', ['ui.router', 'chart.js', 'ngResource', 'ui.bootstrap', 'ngAnimate']);
+var app = angular.module('tinyUrl', ['ngSanitize','ui.router', 'chart.js', 'ngResource', 'ui.bootstrap', 'ngAnimate', 'ngclipboard']);
 
 
 app.config(['$httpProvider','$stateProvider','$urlRouterProvider',function ($httpProvider, $stateProvider, $urlRouterProvider) {
 
 
+    //config EmojiOne
+    // #################################################
+    // # Optional
+
+    // default is PNG but you may also use SVG
+    //emojione.imageType = 'png';
+
+    // default is ignore ASCII smileys like :) but you can easily turn them on
+    emojione.ascii = true;
+
+    // if you want to host the images somewhere else
+    // you can easily change the default paths
+    emojione.imagePathPNG = '../node_modules/emojione/assets/png/';
+    emojione.imagePathSVG = '../node_modules/emojione/assets/svg/';
+
+    // #################################################
 
     //解决Angularjs在IE底下的cache issue, 禁用IE cache
     //initialize get if not there

@@ -1,7 +1,7 @@
 /**
  * Created by Nathan on 9/7/16.
  */
-var SequenceModel = require('../model/sequenceModel');
+//var SequenceModel = require('../model/sequenceModel');
 var UrlModel = require('../model/urlModel');
 var async = require('async');
 
@@ -24,11 +24,10 @@ encode = encode.concat(genCharArray('A', 'Z'));
 encode = encode.concat(genCharArray('0', '9'));
 encode = encode.concat(genCharArray('a', 'z'));
 
-//HASH_SIZE
-var base = encode.length;
-const HASH_SIZE = Math.pow(base, 6);
-const BIG_NUMBER = 28499; //need a big primary to make sure the randomicity, better than magic number "33"
 
+var base = encode.length; //base number based on encoding table
+const HASH_SIZE = Math.pow(base, 6); //HASH_SIZE
+const BIG_NUMBER = 28499; //need a big primary to make sure the randomicity, better than magic number "33"
 
 
 //convert to 62base
@@ -83,7 +82,7 @@ var generateShortUrl = function (longUrl, callback) {
         var createdTime = hashRes[1];
         var shortUrl = convert(orgNumber);
         UrlModel.findOne({shortUrl: shortUrl}, function (err, data) {
-            if (err) throw err;
+            if (err) callback(err);
             if (data) {
                 console.log("shortURL is duplicated");
                 next();
@@ -95,25 +94,8 @@ var generateShortUrl = function (longUrl, callback) {
 
         })
     }, function (data) {
-        callback(data[0], data[1]);
+        callback(false, data[0], data[1]);
     });
-
-
-    // var flag = false;
-    //
-    // async.whilst(function (flag) {
-    //     if (flag) callback(shortUrl);
-    // }, UrlModel.find({shortUrl: shortUrl}, function (err, data) {
-    //     if (!err && !data) {
-    //         callback(shortUrl);
-    //     } else {
-    //         console.log(shortUrl);
-    //
-    //         orgNumber = hash(longUrl);
-    //         shortUrl = convert(orgNumber);
-    //         console.log(shortUrl);
-    //     }
-    // }));
 
 
     // //global sequence table
