@@ -35,6 +35,7 @@ var getShortUrl = function (user, longUrl, callback) {
                     redisClient.hset(url.shortUrl, 'createdTime', url.createdTime);
                     redisClient.hset(url.shortUrl, 'emojiUrl', url.emojiUrl);
                     redisClient.hset(url.user, url.longUrl, url.shortUrl);
+                    redisClient.set(url.emojiUrl, url.shortUrl);
                     callback(url);
                 } else {
                     //when shorturl is generated, need to write to db
@@ -58,19 +59,20 @@ var getShortUrl = function (user, longUrl, callback) {
         };
 
 
+        //TO-DO 其实这里对缓存的调用可以优化, 只要查到shortUrl就能直接返回了, 这么做只是为了保证缓存的一致性
         //用FLAG保证了如果cache出错, 还一定会走mongodb
         if (err) errorHandler.handleError(err, callback);
         else if (shortUrl) {
-            redisClient.hmget(shortUrl, 'createdTime', 'emojiUrl', function (err, createdTime, emojiUrl) {
+            redisClient.hmget(shortUrl, 'createdTime', 'emojiUrl', function (err, data) {
                 if (err) errorHandler.handleError(err, callback);
-                else if (createdTime && emojiUrl) {
+                else if (data.length == 2 && data[0] && data[1]) {
                     console.log("byebye mongodb: getShortUrl");
                     callback({
                         user: user,
-                        createdTime: createdTime,
+                        createdTime: data[0],
                         longUrl: longUrl,
                         shortUrl: shortUrl,
-                        emojiUrl: emojiUrl
+                        emojiUrl: data[1]
                     });
                 } else {
                     mongoCallback();
@@ -121,6 +123,7 @@ var getLongUrl = function (user, shortUrl, callback) {
                     redisClient.hset(url.shortUrl, 'createdTime', url.createdTime);
                     redisClient.hset(url.shortUrl, 'emojiUrl', url.emojiUrl);
                     redisClient.hset(url.user, url.longUrl, url.shortUrl);
+                    redisClient.set(url.emojiUrl, url.shortUrl);
                     if (user != '______dummy$#%' && url.user != user && !(user != '______guest$#%' && url.user === '______guest$#%')) {
                         callback();
                     } else {
@@ -138,6 +141,7 @@ var getLongUrl = function (user, shortUrl, callback) {
 };
 
 
+//TO DO 缓存
 //get all urls
 var getUrls = function (user, callback) {
 
@@ -160,6 +164,7 @@ var deleteUrl = function (user, shortUrl, callback) {
             redisClient.hdel(shortUrl, 'user');
             redisClient.hdel(shortUrl, 'createdTime');
             redisClient.hdel(shortUrl, 'emojiUrl');
+            redisClient.del(url.emojiUrl);
             console.log("url is removed: " + url);
             callback({success: true});
         } else {

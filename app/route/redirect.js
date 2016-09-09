@@ -15,9 +15,14 @@ const dummy = '______dummy$#%';
 router.get('*', function (req, res) {
     var orgUrl = req.originalUrl.slice(1); //similar to substring(1)
 
-    emojiUrl.generateShortUrlFromEmoji(orgUrl, function (shortUrl) {
-        getLongUrlandRedirect(shortUrl, req, res)
-    });
+    if (orgUrl.startsWith('%')) {
+        emojiUrl.generateShortUrlFromEmoji(orgUrl, function (shortUrl) {
+            getLongUrlandRedirect(shortUrl, req, res)
+        });
+    } else {
+        getLongUrlandRedirect(orgUrl, req, res);
+    }
+
 
 
 });
