@@ -37,11 +37,6 @@ angular.module('tinyUrl').controller('userMainController', ['$window', '$locatio
         };
 
 
-
-
-
-
-
         $scope.urls = [];
 
         //get all urls in list
@@ -55,9 +50,9 @@ angular.module('tinyUrl').controller('userMainController', ['$window', '$locatio
                         url.emojiUrlToShow = emojione.shortnameToImage(url.emojiUrl);
                         url.emojiUrlToClick = emojione.shortnameToUnicode(url.emojiUrl);
                         url.isValid = true;
-                        if(url.validity != -1) {
-                            var expirationTime = new Date (new Date(url.createdTime).getTime() + url.validity);
-                            if(expirationTime < new Date()) {
+                        if (url.validity != -1) {
+                            var expirationTime = new Date(new Date(url.createdTime).getTime() + url.validity);
+                            if (expirationTime < new Date()) {
                                 url.isValid = false;
                             }
                         }
@@ -70,13 +65,11 @@ angular.module('tinyUrl').controller('userMainController', ['$window', '$locatio
 
         $scope.urlPrefix = $location.protocol() + '://' + $location.host();
         if ($location.port() != '80') {
-            $scope.urlPrefix +=  ':' + $location.port();
+            $scope.urlPrefix += ':' + $location.port();
         }
         $scope.urlPrefix += '/';
 
         $scope.dateFormat = 'MMM d, yyyy hh:mm a';
-
-
 
 
         $scope.reverseSort = true;  //descending as default
@@ -90,7 +83,12 @@ angular.module('tinyUrl').controller('userMainController', ['$window', '$locatio
                     validity: validity
                 }).success(function (data) {
                     $state.go('home.user.urlInfo', {shortUrl: data.shortUrl});
-                });
+                })
+                    .error(function (data) {
+                        if (data === 'Too many requests') {
+                            $state.go('home.user.error', {errorType: 'tooManyRequests'});
+                        }
+                    });
             });
 
         };
@@ -110,7 +108,6 @@ angular.module('tinyUrl').controller('userMainController', ['$window', '$locatio
                     });
             }
         };
-
 
 
     }]);

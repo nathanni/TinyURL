@@ -16,4 +16,8 @@ angular.module('tinyUrl')
 
     .constant('PERMISSION_EVENTS', {
         noPermission: 'no-permission'
-    });
+    })
+
+    // .constant('REQUEST_EVENTS', {
+    //     tooManyRequests: 'too-many-requests'
+    // });

@@ -5,13 +5,12 @@
 var dictionary = require('./dictionary');
 var emojione = require('../node_modules/emojione/lib/js/emojione.js');
 var UrlModel = require('../model/urlModel');
-var redis = require('redis');
 
-//redis config
-//docker 再创建实例的时候会传入这两个参数
-var host = process.env.REDIS_PORT_6379_TCP_ADDR || '127.0.0.1';
-var port = process.env.REDIS_PORT_6379_TCP_PORT || '6379';
-var redisClient = redis.createClient(port, host);
+var cacheConfig = require('../config/cache');
+var redis = require('redis');
+var redisHost = process.env.REDIS_PORT_6379_TCP_ADDR || cacheConfig.redisHost;
+var redisPort = process.env.REDIS_PORT_6379_TCP_ADDR || cacheConfig.redisPost;
+var redisClient = redis.createClient(redisPort, redisHost);
 
 var generateEmojiUrl = function (shortUrl, callback) {
 

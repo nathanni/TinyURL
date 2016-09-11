@@ -6,14 +6,13 @@ var RequestModel = require('../model/requestModel');
 var urlHash = require('./urlHash');
 var emojiUrl = require('../emoji/emojiUrl');
 var errorHandler = require('./errorHandler');
+
+var cacheConfig = require('../config/cache');
 var redis = require('redis');
+var redisHost = process.env.REDIS_PORT_6379_TCP_ADDR || cacheConfig.redisHost;
+var redisPort = process.env.REDIS_PORT_6379_TCP_ADDR || cacheConfig.redisPost;
+var redisClient = redis.createClient(redisPort, redisHost);
 
-
-//redis config
-//docker 在创建实例的时候会传入这两个参数
-var host = process.env.REDIS_PORT_6379_TCP_ADDR || '127.0.0.1';
-var port = process.env.REDIS_PORT_6379_TCP_PORT || '6379';
-var redisClient = redis.createClient(port, host);
 
 
 //get or generate short url from long url

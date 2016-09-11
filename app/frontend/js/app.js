@@ -4,7 +4,7 @@
 var app = angular.module('tinyUrl', ['ngSanitize','ui.router', 'chart.js', 'ngResource', 'ui.bootstrap', 'ngAnimate', 'ngclipboard']);
 
 
-app.config(['$httpProvider','$stateProvider','$urlRouterProvider',function ($httpProvider, $stateProvider, $urlRouterProvider) {
+app.config(['$httpProvider','$stateProvider','$urlRouterProvider', function ($httpProvider, $stateProvider, $urlRouterProvider) {
 
 
     //config EmojiOne
@@ -114,20 +114,32 @@ app.config(['$httpProvider','$stateProvider','$urlRouterProvider',function ($htt
 
         })
         .state('home.error', {
-            url: 'error',
+            url: 'error/:errorType',
             views: {
                 'main@home': {
-                    templateUrl: 'view/no_permission.html'
+                    templateUrl: function ($stateParams) {
+                        if ($stateParams.errorType == 'noPermission') {
+                            return 'view/no_permission.html';
+                        } else if ($stateParams.errorType == 'tooManyRequests'){
+                            return 'view/too_many_requests.html';
+                        }
+                    }
                 }
             },
             allowAfterLogin: false,
             allowAnonymous: true
         })
         .state('home.user.error', {
-            url: '/error',
+            url: '/error/:errorType',
             views: {
                 'main@home': {
-                    templateUrl: '/view/no_permission.html'
+                    templateUrl: function ($stateParams) {
+                        if ($stateParams.errorType == 'noPermission') {
+                            return 'view/no_permission.html';
+                        } else if ($stateParams.errorType == 'tooManyRequests'){
+                            return 'view/too_many_requests.html';
+                        }
+                    }
                 }
             },
             allowAfterLogin: true,
@@ -162,11 +174,12 @@ app.config(['$httpProvider','$stateProvider','$urlRouterProvider',function ($htt
             //404 没有访问权限的事件
             $scope.$on(PERMISSION_EVENTS.noPermission, function (event) {
                 if(!authService.isAuthenticated()) {
-                    $state.go('home.error');
+                    $state.go('home.error', {errorType: 'noPermission'});
                 } else {
-                    $state.go('home.user.error');
+                    $state.go('home.user.error', {errorType: 'noPermission'});
                 }
 
-            })
+            });
+
 
         }]);

@@ -37,14 +37,18 @@ angular.module('tinyUrl').controller('guestMainController', ['$scope', '$http', 
         };
 
         $scope.submit = function () {
-
             getValidity(function () {
                 $http.post('/api/urls', {
                     longUrl: $scope.longUrl,
                     validity: validity
                 }).success(function (data) {
                     $state.go('home.urlInfo', {shortUrl: data.shortUrl});
+                }).error(function (data) {
+                    if (data === 'Too many requests') {
+                        $state.go('home.error', {errorType: 'tooManyRequests'});
+                    }
                 });
             });
         }
     }]);
+

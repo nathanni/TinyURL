@@ -8,13 +8,14 @@ var morgan = require('morgan');
 var mongoose = require('mongoose');
 var passport = require('passport');
 var config = require('./config/database');
-var port = process.env.PORT || 3000;
 var userAgent = require('express-useragent');
+var port = process.env.PORT || 3000;
+var cacheConfig = require('./config/cache');
 var redis = require('redis');
 
 //redis as publish-subscribe module
-var redisHost = process.env.REDIS_PORT_6379_TCP_ADDR || '127.0.0.1';
-var redisPort = process.env.REDIS_PORT_6379_TCP_PORT || '6379';
+var redisHost = process.env.REDIS_PORT_6379_TCP_ADDR || cacheConfig.redisHost;
+var redisPort = process.env.REDIS_PORT_6379_TCP_ADDR || cacheConfig.redisPost;
 var redisClient = redis.createClient(redisPort, redisHost);
 
 
@@ -31,6 +32,8 @@ var server = app.listen(port, function () {
     console.log("server starts on port: " + port);
 });
 
+
+//websocket 实现和client socket通信, 有redirect的时候刷新urlInfo
 var io = require('socket.io')(server);
 
 io.on('connection', function (socket) {
@@ -59,7 +62,7 @@ io.on('connection', function (socket) {
 
 //import router
 var apiRouter = require('./route/api');
-var redirectRouter = require('./route/redirect');
+var redirectRouter = require('./route/redirect')(redis, redisHost, redisPort);
 var frontendRouter = require('./route/frontend');
 
 //static resource

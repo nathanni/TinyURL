@@ -64,6 +64,10 @@ angular.module('tinyUrl').controller('homeController', ['$scope', '$uibModal', '
                 return viewLocation === '/urlInfo';
             } else if  ($location.path().startsWith('/user/urlInfo')) {
                 return viewLocation === '/user/urlInfo';
+            } else if  ($location.path().startsWith('/error')) {
+                return viewLocation === '/error';
+            } else if  ($location.path().startsWith('/user/error')) {
+                return viewLocation === '/user/error';
             }
             else {
                 return viewLocation === $location.path();
