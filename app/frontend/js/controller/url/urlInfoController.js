@@ -9,6 +9,7 @@ angular.module('tinyUrl').controller('urlInfoController', ['$window', '$state', 
         socket.emit('statsPageOpen', {shortUrl: $stateParams.shortUrl});
 
         socket.on('reload', function () {
+            console.log('reload');
             loadStats();
         });
 

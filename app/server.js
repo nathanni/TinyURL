@@ -10,6 +10,13 @@ var passport = require('passport');
 var config = require('./config/database');
 var port = process.env.PORT || 3000;
 var userAgent = require('express-useragent');
+var redis = require('redis');
+
+//redis as publish-subscribe module
+var redisHost = process.env.REDIS_PORT_6379_TCP_ADDR || '127.0.0.1';
+var redisPort = process.env.REDIS_PORT_6379_TCP_PORT || '6379';
+var redisClient = redis.createClient(redisPort, redisHost);
+
 
 // Use the passport package in our application
 app.use(passport.initialize());
@@ -25,15 +32,27 @@ var server = app.listen(port, function () {
 });
 
 var io = require('socket.io')(server);
-app.io = io;
 
 io.on('connection', function (socket) {
     socket.on('statsPageOpen', function (data) {
-        app.io[data.shortUrl] = socket;//为了在redirect里面调用app.io的时候可以调用到具体是哪个socket,然后进行通信
-        socket.shortUrl = data.shortUrl;//为了在disconnect的时候通过找shortUrl把app.io里面对该socket的映射删除
+        redisClient.subscribe(data.shortUrl, function () {
+            socket.shortUrl = data.shortUrl;
+            console.log('subscribe channel: ' + data.shortUrl);
+        });
+        redisClient.on('message', function (err, msg) {
+            if (msg === socket.shortUrl) {
+                socket.emit('reload', 'please reload stats');
+            }
+        });
+        // app.io[data.shortUrl] = socket;//为了在redirect里面调用app.io的时候可以调用到具体是哪个socket,然后进行通信
+        // socket.shortUrl = data.shortUrl;//为了在disconnect的时候通过找shortUrl把app.io里面对该socket的映射删除
     });
     socket.on('disconnect', function () {
-        delete app.io[socket.shortUrl];//删除socket映射
+        // delete app.io[socket.shortUrl];//删除socket映射
+        redisClient.unsubscribe(socket.shortUrl, function () {
+            console.log('Unsubsribe channel:' + socket.shortUrl);
+        });
+
     })
 });
 
@@ -66,7 +85,7 @@ app.use('/api', apiRouter);
 app.use('/', frontendRouter);
 
 //redirect router :shortUrl as param, represents for 任意字符串匹配
-app.use('/:shortUrl', redirectRouter(app));
+app.use('/:shortUrl', redirectRouter);
 
 
 
