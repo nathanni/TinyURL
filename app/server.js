@@ -13,18 +13,35 @@ var userAgent = require('express-useragent');
 
 // Use the passport package in our application
 app.use(passport.initialize());
+
 //apply passport strategy
 require('./config/passport')(passport);
 
 //mongoDb
 mongoose.connect(config.database);
 
+var server = app.listen(port, function () {
+    console.log("server starts on port: " + port);
+});
+
+var io = require('socket.io')(server);
+app.io = io;
+
+io.on('connection', function (socket) {
+    socket.on('statsPageOpen', function (data) {
+        app.io[data.shortUrl] = socket;//为了在redirect里面调用app.io的时候可以调用到具体是哪个socket,然后进行通信
+        socket.shortUrl = data.shortUrl;//为了在disconnect的时候通过找shortUrl把app.io里面对该socket的映射删除
+    });
+    socket.on('disconnect', function () {
+        delete app.io[socket.shortUrl];//删除socket映射
+    })
+});
+
 
 //import router
 var apiRouter = require('./route/api');
 var redirectRouter = require('./route/redirect');
 var frontendRouter = require('./route/frontend');
-
 
 //static resource
 app.use('/bower_components', express.static(__dirname + '/frontend/bower_components'));
@@ -49,10 +66,7 @@ app.use('/api', apiRouter);
 app.use('/', frontendRouter);
 
 //redirect router :shortUrl as param, represents for 任意字符串匹配
-app.use('/:shortUrl', redirectRouter);
+app.use('/:shortUrl', redirectRouter(app));
 
 
-app.listen(port, function () {
-    console.log("server starts on port: " + port);
-});
 

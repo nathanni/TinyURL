@@ -32,6 +32,7 @@
     "node-schedule": "^1.1.1",
     "passport": "^0.3.2",
     "passport-jwt": "^2.1.0",
-    "redis": "^2.6.2"
+    "redis": "^2.6.2",
+    "socket.io": "^1.4.8"
   }
 }

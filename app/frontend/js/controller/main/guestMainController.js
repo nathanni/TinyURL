@@ -33,7 +33,6 @@ angular.module('tinyUrl').controller('guestMainController', ['$scope', '$http', 
             } else {
                 validity = validateTime[$scope.validitySelect];
             }
-            console.log('validity: ' + validity);
             callback();
         };
 

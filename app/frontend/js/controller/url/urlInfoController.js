@@ -1,9 +1,16 @@
 /**
  * Created by Nathan on 8/28/2016.
  */
-angular.module('tinyUrl').controller('urlInfoController', ['$window','$state','$scope', 'fromUser', '$http', '$location', '$stateParams',
+angular.module('tinyUrl').controller('urlInfoController', ['$window', '$state', '$scope', 'fromUser', '$http', '$location', '$stateParams',
     function ($window, $state, $scope, fromUser, $http, $location, $stateParams) {
 
+        var socket = io();
+
+        socket.emit('statsPageOpen', {shortUrl: $stateParams.shortUrl});
+
+        socket.on('reload', function () {
+            loadStats();
+        });
 
 
         if (fromUser) {
@@ -17,11 +24,9 @@ angular.module('tinyUrl').controller('urlInfoController', ['$window','$state','$
 
         $scope.urlPrefix = $location.protocol() + '://' + $location.host();
         if ($location.port() != '80') {
-            $scope.urlPrefix +=  ':' + $location.port();
+            $scope.urlPrefix += ':' + $location.port();
         }
         $scope.urlPrefix += '/';
-
-
 
 
         $http.get(api + $stateParams.shortUrl)
@@ -34,9 +39,9 @@ angular.module('tinyUrl').controller('urlInfoController', ['$window','$state','$
                 $scope.createdTime = new Date(data.createdTime);
 
                 $scope.expirationTime = 'FOREVER';
-                if(data.validity != -1) {
+                if (data.validity != -1) {
                     $scope.expirationTime = new Date($scope.createdTime.getTime() + data.validity);
-                    if($scope.expirationTime < new Date()) {
+                    if ($scope.expirationTime < new Date()) {
                         $scope.expirationTime = 'EXPIRED';
                     }
 
@@ -53,7 +58,7 @@ angular.module('tinyUrl').controller('urlInfoController', ['$window','$state','$
                 //update validity
                 $scope.updateValidity = function () {
                     var updateValidity = $window.confirm('Make this shortURL never expired?');
-                    if(updateValidity) {
+                    if (updateValidity) {
                         $http.put(api + $stateParams.shortUrl, {}).success(function (data) {
                             if (data.success) {
                                 console.log('update validity success');
@@ -71,10 +76,13 @@ angular.module('tinyUrl').controller('urlInfoController', ['$window','$state','$
             });
 
 
-        $http.get(api + $stateParams.shortUrl + "/totalClicks")
-            .success(function (data) {
-                $scope.totalClicks = data;
-            });
+        var getTotalClicks = function () {
+            $http.get(api + $stateParams.shortUrl + "/totalClicks")
+                .success(function (data) {
+                    $scope.totalClicks = data;
+                });
+        };
+
 
         var renderChart = function (chart, infos) {
             $scope[chart + 'Labels'] = [];
@@ -88,11 +96,6 @@ angular.module('tinyUrl').controller('urlInfoController', ['$window','$state','$
                     });
                 });
         };
-
-        renderChart('pie', 'referer');
-        renderChart('doughnut', 'country');
-        renderChart('bar', 'platform');
-        renderChart('base', 'browser');
 
         $scope.getTime = function (time) {
             $scope.lineLabels = [];
@@ -124,11 +127,17 @@ angular.module('tinyUrl').controller('urlInfoController', ['$window','$state','$
                 });
         };
 
-        $scope.getTime('hour');
 
+        var loadStats = function () {
+            getTotalClicks();
+            renderChart('pie', 'referer');
+            renderChart('doughnut', 'country');
+            renderChart('bar', 'platform');
+            renderChart('base', 'browser');
+            $scope.getTime('hour');
+        };
 
-
-
+        loadStats();
 
 
     }])

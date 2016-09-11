@@ -33,7 +33,6 @@ angular.module('tinyUrl').controller('userMainController', ['$window', '$locatio
             } else {
                 validity = validateTime[$scope.validitySelect];
             }
-            console.log('validity: ' + validity);
             callback();
         };
 

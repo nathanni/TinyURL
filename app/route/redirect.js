@@ -12,32 +12,44 @@ var emojiUrl = require('../emoji/emojiUrl');
 
 const dummy = '______dummy$#%';
 
-router.get('*', function (req, res) {
-    var orgUrl = req.originalUrl.slice(1); //similar to substring(1)
+var redirectRouter = function (app) {
+    router.get('*', function (req, res) {
 
-    if (orgUrl.startsWith('%')) {
-        emojiUrl.generateShortUrlFromEmoji(orgUrl, function (shortUrl) {
-            getLongUrlandRedirect(shortUrl, req, res)
-        });
-    } else {
-        getLongUrlandRedirect(orgUrl, req, res);
-    }
+        var getLongUrlandRedirect = function (shortUrl) {
+            urlService.getLongUrl(dummy, shortUrl, function (data) {
+                if (data.success && data.url) {
+                    res.redirect(data.url.longUrl);
+                    statsService.logRequest(shortUrl, data.url.user, req);
+
+                    //只通知connect的相应的socket reload
+                    if(app.io[shortUrl]) {
+                        app.io[shortUrl].emit('reload', 'please reload stats');
+                    }
+
+                } else {
+                    res.sendFile(path.join(__dirname, '../frontend/view', '404.html'));
+                }
+
+            });
+        };
 
 
+        var orgUrl = req.originalUrl.slice(1); //similar to substring(1)
 
-});
-
-
-var getLongUrlandRedirect = function (shortUrl, req, res) {
-    urlService.getLongUrl(dummy, shortUrl, function (data) {
-        if (data.success && data.url) {
-            res.redirect(data.url.longUrl);
-            statsService.logRequest(shortUrl, data.url.user, req);
+        if (orgUrl.startsWith('%')) {
+            emojiUrl.generateShortUrlFromEmoji(orgUrl, function (shortUrl) {
+                getLongUrlandRedirect(shortUrl)
+            });
         } else {
-            res.sendFile(path.join(__dirname, '../frontend/view', '404.html'));
+            getLongUrlandRedirect(orgUrl);
         }
 
     });
+
+
+    return router;
 };
 
-module.exports = router;
+
+
+module.exports = redirectRouter;
