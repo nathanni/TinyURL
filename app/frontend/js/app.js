@@ -51,14 +51,14 @@ app.config(['$httpProvider','$stateProvider','$urlRouterProvider',function ($htt
             url: '/',
             views: {
                 '': {
-                    templateUrl: '/view/home.html',
+                    templateUrl: 'view/home.html',
                     controller: 'homeController as $ctrl'
                 },
                 'nav@home': {
-                    templateUrl: '/view/nav/guestNav.html'
+                    templateUrl: 'view/nav/guestNav.html'
                 },
                 'main@home': {
-                    templateUrl: '/view/main/guestMain.html',
+                    templateUrl: 'view/main/guestMain.html',
                     controller: 'guestMainController'
                 }
             },
@@ -69,11 +69,11 @@ app.config(['$httpProvider','$stateProvider','$urlRouterProvider',function ($htt
             url: 'user',
             views: {
                 'nav@home': {
-                    templateUrl: '/view/nav/userNav.html',
+                    templateUrl: 'view/nav/userNav.html',
                     controller: 'userNavController'
                 },
                 'main@home': {
-                    templateUrl: '/view/main/userMain.html',
+                    templateUrl: 'view/main/userMain.html',
                     controller: 'userMainController'
                 }
             },
@@ -84,7 +84,7 @@ app.config(['$httpProvider','$stateProvider','$urlRouterProvider',function ($htt
             url: '/urlInfo/:shortUrl',
             views: {
                 'main@home': {
-                    templateUrl: '/view/url/urlInfo.html',
+                    templateUrl: 'view/url/urlInfo.html',
                     controller: 'urlInfoController',
                     resolve: {
                         fromUser: function () {
@@ -100,7 +100,7 @@ app.config(['$httpProvider','$stateProvider','$urlRouterProvider',function ($htt
             url: 'urlInfo/:shortUrl',
             views: {
                 'main@home': {
-                    templateUrl: '/view/url/urlInfo.html',
+                    templateUrl: 'view/url/urlInfo.html',
                     controller: 'urlInfoController',
                     resolve: {
                         fromUser: function () {
@@ -117,7 +117,7 @@ app.config(['$httpProvider','$stateProvider','$urlRouterProvider',function ($htt
             url: 'error',
             views: {
                 'main@home': {
-                    templateUrl: '/view/no_permission.html'
+                    templateUrl: 'view/no_permission.html'
                 }
             },
             allowAfterLogin: false,

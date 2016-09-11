@@ -56,13 +56,13 @@ var getUrlInfo = function (shortUrl, info, callback) {
             year: {$year: '$timestamp'},
             month: {$month: '$timestamp'},
             day: {$dayOfMonth: '$timestamp'},
-            hour: {$hour: '$timestamp'},
+            hour: {$hour: '$timestamp'}
         }
     } else if (info === 'month') {
         groupId = {
             year: {$year: '$timestamp'},
             month: {$month: '$timestamp'},
-            day: {$dayOfMonth: '$timestamp'},
+            day: {$dayOfMonth: '$timestamp'}
 
         }
     } else {

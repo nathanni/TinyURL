@@ -29,10 +29,10 @@ router.get('*', function (req, res) {
 
 
 var getLongUrlandRedirect = function (shortUrl, req, res) {
-    urlService.getLongUrl(dummy, shortUrl, function (url) {
-        if (url) {
-            res.redirect(url.longUrl);
-            statsService.logRequest(shortUrl, url.user, req);
+    urlService.getLongUrl(dummy, shortUrl, function (data) {
+        if (data.success && data.url) {
+            res.redirect(data.url.longUrl);
+            statsService.logRequest(shortUrl, data.url.user, req);
         } else {
             res.sendFile(path.join(__dirname, '../frontend/view', '404.html'));
         }

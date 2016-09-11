@@ -51,19 +51,19 @@ var generateShortUrlFromEmoji = function (orgUrl, callback) {
 
 
     redisClient.get(emojiShortNames, function (err, shortUrl) {
-        if(err) callback();
+        if (err) callback();
         if (shortUrl) {
             console.log("byebye mongodb: emojiUrl");
             callback(shortUrl);
         } else {
             UrlModel.findOne({emojiUrl: emojiShortNames}, function (err, url) {
                 if (err) callback();
-                else if(url) {
+                else if (url) {
                     redisClient.hset(url.shortUrl, 'longUrl', url.longUrl);
                     redisClient.hset(url.shortUrl, 'user', url.user); //记录shortURL belongs 哪个user
                     redisClient.hset(url.shortUrl, 'createdTime', url.createdTime);
                     redisClient.hset(url.shortUrl, 'emojiUrl', url.emojiUrl);
-                    redisClient.hset(url.user, url.longUrl, url.shortUrl);
+                    redisClient.hset(url.shortUrl, 'validity', url.validity);
                     redisClient.set(url.emojiUrl, url.shortUrl);
                     callback(url.shortUrl);
                 } else {
@@ -74,8 +74,6 @@ var generateShortUrlFromEmoji = function (orgUrl, callback) {
         }
 
     });
-
-
 
 
     // var split = orgUrl.split(/([\uD800-\uDBFF][\uDC00-\uDFFF])/);

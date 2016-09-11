@@ -5,9 +5,14 @@
                 <h4>Your long URL is: </h4>
                 <a ng-href="{{longUrl}}" target="_blank">{{longUrl}}</a>
             </div>
-            <div class="col-md-3 col-md-offset-2">
-                <h4>Created Time: </h4>
-                <p ng-bind="createdTime | date:dateFormat"></p>
+
+            <div class="col-md-4">
+                <h4>Expiration Time: </h4>
+                <font color="red"><p ng-bind="expirationTime | date:dateFormat"></p></font>
+            </div>
+            <div class="col-md-3" ng-if="showRenewButton">
+                <p><b>Make it Lifetime</b></p>
+                <button class="btn btn-md btn-success" ng-click="updateValidity()" >Click me</button>
             </div>
         </div>
         <div class="row">
@@ -15,9 +20,14 @@
                 <h4>Your short URL is: </h4>
                 <a ng-href="{{shortUrlToShow}}" target="_blank">{{shortUrlToShow}}</a>
             </div>
-            <div class="col-md-3 col-md-offset-2">
-                <h4>Created By User: </h4>
-                <p>{{createdByuser}}</p>
+
+            <div class="col-md-4">
+                <h4>Created Time: </h4>
+                <p ng-bind="createdTime | date:dateFormat"></p>
+            </div>
+            <div class="col-md-2 ">
+                <h4>Created By: </h4>
+                <p>{{createdByUser}}</p>
             </div>
         </div>
     </div>
@@ -29,22 +39,11 @@
             <div class="panel-body">
                 <b>{{totalClicks }}</b>
             </div>
+
         </div>
     </div>
 </div>
 <br>
-
-<div class="row">
-    <div class="col-md-8 col-md-offset-2">
-
-
-
-
-
-    </div>
-</div>
-
-
 <div class="row">
     <div class="col-md-10 col-md-offset-1">
 
@@ -52,7 +51,7 @@
             <div class="panel-heading">Your Emoji URL</div>
             <div class="panel-body" align="center">
                 <div class="input-group">
-                    <span class="input-group-addon" id="basic-addon3">http://localhost:3000/</span>
+                    <span class="input-group-addon" id="basic-addon3">{{urlPrefix}}</span>
                     <input type="text" class="form-control" id="basic-url" aria-describedby="basic-addon3"
                            value="{{emojiUrlToShowSmall}}" >
                     <div class="input-group-btn">

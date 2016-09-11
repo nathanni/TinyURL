@@ -1,12 +1,13 @@
 /**
  * Created by Nathan on 8/28/2016.
  */
-angular.module('tinyUrl').controller('urlInfoController', ['$scope', 'fromUser', '$http', '$location', '$stateParams',
-    function ($scope, fromUser, $http, $location, $stateParams) {
+angular.module('tinyUrl').controller('urlInfoController', ['$window','$state','$scope', 'fromUser', '$http', '$location', '$stateParams',
+    function ($window, $state, $scope, fromUser, $http, $location, $stateParams) {
+
 
 
         if (fromUser) {
-            var api = '/api/user/urls/';
+            var api = '/api/users/urls/';
 
         } else {
             var api = '/api/urls/';
@@ -14,9 +15,14 @@ angular.module('tinyUrl').controller('urlInfoController', ['$scope', 'fromUser',
 
         $scope.dateFormat = 'MMM d, yyyy hh:mm:ss a';
 
-        var urlPrefix = $location.protocol() + "://" +
-            $location.host() + ":" +
-            $location.port() + "/";
+        $scope.urlPrefix = $location.protocol() + '://' + $location.host();
+        if ($location.port() != '80') {
+            $scope.urlPrefix +=  ':' + $location.port();
+        }
+        $scope.urlPrefix += '/';
+
+
+
 
         $http.get(api + $stateParams.shortUrl)
             .success(function (data) {
@@ -26,11 +32,41 @@ angular.module('tinyUrl').controller('urlInfoController', ['$scope', 'fromUser',
                 $scope.emojiUrlToShow = emojione.shortnameToImage($scope.emojiUrl);//emojiOne
                 $scope.longUrl = data.longUrl;
                 $scope.createdTime = new Date(data.createdTime);
+
+                $scope.expirationTime = 'FOREVER';
+                if(data.validity != -1) {
+                    $scope.expirationTime = new Date($scope.createdTime.getTime() + data.validity);
+                    if($scope.expirationTime < new Date()) {
+                        $scope.expirationTime = 'EXPIRED';
+                    }
+
+                }
                 //这里不能定义$scope.user, 不然会读取到$rootScope.user
-                $scope.createdByuser = data.user === '______guest$#%' ? 'public' : data.user; // hide real guest's name
-                $scope.shortUrlToShow = urlPrefix + $scope.shortUrl;
+                $scope.createdByUser = data.user === '______guest$#%' ? 'public' : data.user; // hide real guest's name
+                $scope.showRenewButton = $scope.expirationTime != 'FOREVER' && data.user != '______guest$#%' && fromUser; //true when the login user have the right permission to the shortURL
+
+                $scope.shortUrlToShow = $scope.urlPrefix + $scope.shortUrl;
                 $scope.emojiUrlToShowSmall = emojione.shortnameToUnicode($scope.emojiUrl);
-                $scope.emojiUrlToClick = urlPrefix + $scope.emojiUrlToShowSmall;
+                $scope.emojiUrlToClick = $scope.urlPrefix + $scope.emojiUrlToShowSmall;
+
+
+                //update validity
+                $scope.updateValidity = function () {
+                    var updateValidity = $window.confirm('Make this shortURL never expired?');
+                    if(updateValidity) {
+                        $http.put(api + $stateParams.shortUrl, {}).success(function (data) {
+                            if (data.success) {
+                                console.log('update validity success');
+                                $scope.expirationTime = 'FOREVER';
+                                $scope.showRenewButton = false;
+                            } else {
+                                console.log('update validity fail');
+                                $window.alert('Error happened, contact the administrator.');
+                            }
+                        });
+                    }
+                }
+
 
             });
 
@@ -89,6 +125,12 @@ angular.module('tinyUrl').controller('urlInfoController', ['$scope', 'fromUser',
         };
 
         $scope.getTime('hour');
+
+
+
+
+
+
     }])
 
     .factory('AuthInterceptor', function ($rootScope, $q, PERMISSION_EVENTS) {

@@ -7,7 +7,8 @@ var urlSchema = new Schema({
     createdTime: Date,
     longUrl: String,
     shortUrl: String,
-    emojiUrl: String
+    emojiUrl: String,
+    validity: Number
 });
 
 var UrlModel = mongoose.model('UrlModel', urlSchema);

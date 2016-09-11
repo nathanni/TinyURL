@@ -29,7 +29,7 @@ coverage
 build/Release
 
 # Dependency directories
-node_modules
+#node_modules
 jspm_packages
 
 # Optional npm cache directory
@@ -38,7 +38,7 @@ jspm_packages
 # Optional REPL history
 .node_repl_history
 
-frontend/bower_components/
+#frontend/bower_components/
 
 
 ##要注意这个文件是放在/app底下的, 对于一些文件夹的忽略开头不能加 /, 否则会跑到根目录下去.

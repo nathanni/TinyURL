@@ -19,31 +19,32 @@ const dummy = '______dummy$#%';
 //guest 生成shortUrl from long
 router.post('/urls', function (req, res) {
     var longUrl = req.body.longUrl; //longUrl is from JSON
+    var validity = req.body.validity;
     if (!longUrl || longUrl.trim() == '') {
         res.status(400).send("No shortUrl is generated");
         return false;
     }
-    //数据库读写是IO操作, 得改用callback
-    urlService.getShortUrl(guest, longUrl, function (url) {
+    urlService.getShortUrl(guest, longUrl, validity, function (url) {
         res.json(url);
     });
 });
 //user 生成shortUrl from long
-router.post('/user/urls', passport.authenticate('jwt', {session: false}), function (req, res) {
+router.post('/users/urls', passport.authenticate('jwt', {session: false}), function (req, res) {
     var user = req.body.user;
     var longUrl = req.body.longUrl;
+    var validity = req.body.validity;
     if (!longUrl || longUrl.trim() == '') {
         res.status(400).send("No shortUrl is generated");
         return false;
     }
-    urlService.getShortUrl(user, longUrl, function (url) {
+    urlService.getShortUrl(user, longUrl, validity, function (url) {
         res.json(url);
     });
 });
 
 
 //user get all urls info
-router.get('/user/urls', passport.authenticate('jwt', {session: false}), function (req, res) {
+router.get('/users/urls', passport.authenticate('jwt', {session: false}), function (req, res) {
     var user = getUser(req);
     urlService.getUrls(user, function (urls) {
         res.json(urls);
@@ -51,7 +52,7 @@ router.get('/user/urls', passport.authenticate('jwt', {session: false}), functio
 });
 
 //user delete url info, guest has no permission to do this
-router.delete('/user/urls/:shortUrl', passport.authenticate('jwt', {session: false}), function (req, res) {
+router.delete('/users/urls/:shortUrl', passport.authenticate('jwt', {session: false}), function (req, res) {
     var user = getUser(req);
     var shortUrl = req.params.shortUrl;
     urlService.deleteUrl(user, shortUrl, function (data) {
@@ -63,28 +64,39 @@ router.delete('/user/urls/:shortUrl', passport.authenticate('jwt', {session: fal
 //guest 获得longUrl from short
 router.get('/urls/:shortUrl', function (req, res) {
     var shortUrl = req.params.shortUrl;
-    urlService.getLongUrl(guest, shortUrl, function (url) {
-        if (url) {
-            res.json(url);
+    urlService.getLongUrl(guest, shortUrl, function (data) {
+        if (data.url) {
+            res.json(data.url);
         } else {
             res.status(404).send("no permission");
         }
     });
 });
 //user 获得longUrl from short
-router.get('/user/urls/:shortUrl', passport.authenticate('jwt', {session: false}), function (req, res) {
+router.get('/users/urls/:shortUrl', passport.authenticate('jwt', {session: false}), function (req, res) {
     var shortUrl = req.params.shortUrl;
 
     var user = getUser(req);
 
-    urlService.getLongUrl(user, shortUrl, function (url) {
-        if (url) {
-            res.json(url);
+    urlService.getLongUrl(user, shortUrl, function (data) {
+        if (data.url) {
+            res.json(data.url);
         } else {
             res.status(404).send("no permission");
         }
     });
 });
+
+
+//only user have the permissiong to update validity
+router.put('/users/urls/:shortUrl',  passport.authenticate('jwt', {session: false}), function (req, res) {
+    var shortUrl = req.params.shortUrl;
+    var user = getUser(req);
+    urlService.updateValidity(user, shortUrl, function (data) {
+        res.json(data);
+    });
+});
+
 
 
 //guest 获得shortUrl stats
@@ -94,11 +106,12 @@ router.get('/urls/:shortUrl/:info', function (req, res) {
     });
 });
 //user 获得shortUrl stats
-router.get('/user/urls/:shortUrl/:info', passport.authenticate('jwt', {session: false}), function (req, res) {
+router.get('/users/urls/:shortUrl/:info', passport.authenticate('jwt', {session: false}), function (req, res) {
     statsService.getUrlInfo(req.params.shortUrl, req.params.info, function (data) {
         res.json(data);
     });
 });
+
 
 
 // function to get token from request.header
@@ -153,7 +166,7 @@ router.post('/login', function (req, res) {
 
 
 //get userdash info, protected by passport
-router.get('/userdash', passport.authenticate('jwt', {session: false}), function (req, res) {
+router.get('/users', passport.authenticate('jwt', {session: false}), function (req, res) {
     userService.userdash(req.headers, function (statusCode, ret) {
         res.status(statusCode).json(ret);
     });

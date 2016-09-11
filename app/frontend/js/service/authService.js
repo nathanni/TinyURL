@@ -3,7 +3,7 @@
  */
 angular.module('tinyUrl')
 
-    .service('authService', ['$state', '$q', '$http', 'API_ENDPOINT', function($state, $q, $http, API_ENDPOINT) {
+    .service('authService', ['$state', '$q', '$http', function($state, $q, $http) {
         var LOCAL_TOKEN_KEY = 'yourTokenKey';
         var isAuthenticated = false;
         var authToken;
@@ -37,7 +37,7 @@ angular.module('tinyUrl')
 
         var register = function(user) {
             return $q(function(resolve, reject) {
-                $http.post(API_ENDPOINT.url + '/signup', user).then(function(result) {
+                $http.post('/api/signup', user).then(function(result) {
                     if (result.data.success) {
                         resolve(result.data.msg);
                     } else {
@@ -49,7 +49,7 @@ angular.module('tinyUrl')
 
         var login = function(user) {
             return $q(function(resolve, reject) {
-                $http.post(API_ENDPOINT.url + '/login', user).then(function(result) {
+                $http.post('/api/login', user).then(function(result) {
                     if (result.data.success) {
                         storeUserCredentials(result.data.token);
                         resolve(result.data.msg);
@@ -62,7 +62,7 @@ angular.module('tinyUrl')
 
         var userdash = function() {
             return $q(function(resolve) {
-                $http.get(API_ENDPOINT.url + '/userdash').then(function(result) {
+                $http.get('/api/users').then(function(result) {
                     if (result.data.success) {
                         resolve(result.data);
                     }
