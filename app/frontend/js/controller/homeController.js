@@ -1,8 +1,8 @@
 /**
  * Created by Nathan on 8/28/2016.
  */
-angular.module('tinyUrl').controller('homeController', ['$scope', '$uibModal', 'REQUIRE_RELOGIN', '$location',
-    function ($scope, $uibModal, REQUIRE_RELOGIN, $location) {
+angular.module('tinyUrl').controller('homeController', ['$state','$scope', '$uibModal', 'REQUIRE_RELOGIN', '$location',
+    function ($state, $scope, $uibModal, REQUIRE_RELOGIN, $location) {
         $scope.navView = 'nav';
         $scope.mainView = 'main';
 
@@ -81,6 +81,12 @@ angular.module('tinyUrl').controller('homeController', ['$scope', '$uibModal', '
                 return this.indexOf(searchString, position) === position;
             };
         }
+
+        $ctrl.shortUrl = '';
+        $ctrl.search = function () {
+          $state.go('home.urlInfo', {shortUrl: $ctrl.shortUrl});
+            $ctrl.shortUrl = '';
+        };
 
     }]);
 

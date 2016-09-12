@@ -13,10 +13,20 @@
             <ul class="nav navbar-nav" ng-if="isActive('/error')">
                 <li class="active"><a href="javascript:void(0)"><span class="glyphicon glyphicon-exclamation-sign"></span> Error</a></li>
             </ul>
-            <ul class="nav navbar-nav navbar-right nav">
+            <ul class="nav navbar-nav navbar-right">
                 <li><a href="javascript:void(0)" ng-click="$ctrl.openSignup()"><span class="glyphicon glyphicon-pencil"></span> Sign Up</a></li>
                 <li><a href="javascript:void(0)" ng-click="$ctrl.openLogin()"><span class="glyphicon glyphicon-log-in"></span> Log In</a></li>
             </ul>
+            <div class="pull-left">
+                <form class="navbar-form" role="search">
+                    <div class="input-group">
+                        <input type="text" class="form-control" placeholder="Search ShortURL (6 chars)" maxlength="6" name="srch-term" id="srch-term" ng-model="$ctrl.shortUrl">
+                        <div class="input-group-btn">
+                            <button class="btn btn-default" ng-click="$ctrl.search()"><i class="glyphicon glyphicon-search"></i></button>
+                        </div>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
 </nav>

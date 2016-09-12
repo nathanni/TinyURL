@@ -204,7 +204,8 @@ const dummy = '______dummy$#%';
 
             };
 
-            rateLimiter('login', maxReq, period, req, restricAccess, function () {
+            //防止同一个用户名重试密码多次
+            rateLimiter(req.body.username, maxReq, period, req, restricAccess, function () {
                 userService.signin(req.body.username, req.body.password, function (ret) {
                     res.json(ret);
                 });

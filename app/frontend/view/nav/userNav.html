@@ -23,6 +23,16 @@
                     </ul>
                 </li>
             </ul>
+            <div class="pull-left">
+                <form class="navbar-form" role="search">
+                    <div class="input-group">
+                        <input type="text" class="form-control" placeholder="Search ShortURL (6 chars)" maxlength="6" name="srch-term" id="srch-term" ng-model="shortUrl">
+                        <div class="input-group-btn">
+                            <button class="btn btn-default" ng-click="search()"><i class="glyphicon glyphicon-search"></i></button>
+                        </div>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
 </nav>

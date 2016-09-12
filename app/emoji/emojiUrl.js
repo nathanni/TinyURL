@@ -9,7 +9,7 @@ var UrlModel = require('../model/urlModel');
 var cacheConfig = require('../config/cache');
 var redis = require('redis');
 var redisHost = process.env.REDIS_PORT_6379_TCP_ADDR || cacheConfig.redisHost;
-var redisPort = process.env.REDIS_PORT_6379_TCP_ADDR || cacheConfig.redisPost;
+var redisPort = process.env.REDIS_PORT_6379_TCP_PORT || cacheConfig.redisPost;
 var redisClient = redis.createClient(redisPort, redisHost);
 
 var generateEmojiUrl = function (shortUrl, callback) {

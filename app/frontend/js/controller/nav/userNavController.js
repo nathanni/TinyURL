@@ -13,4 +13,10 @@ angular.module('tinyUrl').controller('userNavController', ['$rootScope','$scope'
             authService.logout();
             $state.go('home');
         };
+
+        $scope.shortUrl = '';
+        $scope.search = function () {
+            $state.go('home.user.urlInfo', {shortUrl: $scope.shortUrl});
+            $scope.shortUrl = '';
+        };
     }]);
