@@ -69,8 +69,8 @@
                 <td style="word-wrap: break-word;min-width: 160px;max-width: 300px;"><a ng-href="{{url.longUrl}}">{{url.longUrl}}</a>
                 </td>
                 <td><p ng-bind="url.createdTime | date: dateFormat"></p></td>
-                <td><a href="{{urlPrefix + url.shortUrl}}">{{urlPrefix + url.shortUrl}}</a></td>
-                <td><a href="{{urlPrefix + url.emojiUrlToClick}}" ng-bind-html="url.emojiUrlToShow"></a>&nbsp;&nbsp;&nbsp;&nbsp;
+                <td><a href="{{fullUrlPrefix + url.shortUrl}}">{{urlPrefix + url.shortUrl}}</a></td>
+                <td><a href="{{fullUrlPrefix + url.emojiUrlToClick}}" ng-bind-html="url.emojiUrlToShow"></a>&nbsp;&nbsp;&nbsp;&nbsp;
                     <button class="btn btn-success btn-xs" ngclipboard
                             data-clipboard-text="{{urlPrefix + url.emojiUrlToClick}}">
                         <span class="glyphicon glyphicon-scissors" aria-hidden="true"></span> Copy

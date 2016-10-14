@@ -1,7 +1,7 @@
 nginx:
   build: ./nginx
   ports:
-    - "80:80"
+    - "8080:80"
   links:
     - "app1:app1"
     - "app2:app2"

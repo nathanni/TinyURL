@@ -26,11 +26,12 @@ angular.module('tinyUrl').controller('urlInfoController', ['$window', '$state', 
 
             $scope.dateFormat = 'MMM d, yyyy hh:mm:ss a';
 
-            $scope.urlPrefix = $location.protocol() + '://' + $location.host();
+            $scope.urlPrefix =  $location.host();
             if ($location.port() != '80') {
                 $scope.urlPrefix += ':' + $location.port();
             }
             $scope.urlPrefix += '/';
+            $scope.fullUrlPrefix = $location.protocol() + '://' + $scope.urlPrefix;
 
 
             $http.get(api + $stateParams.shortUrl)
@@ -55,8 +56,9 @@ angular.module('tinyUrl').controller('urlInfoController', ['$window', '$state', 
                     $scope.showRenewButton = $scope.expirationTime != 'FOREVER' && data.user != '______guest$#%' && fromUser; //true when the login user have the right permission to the shortURL
 
                     $scope.shortUrlToShow = $scope.urlPrefix + $scope.shortUrl;
+                    $scope.shortUrlToClick = $scope.fullUrlPrefix + $scope.shortUrl;
                     $scope.emojiUrlToShowSmall = emojione.shortnameToUnicode($scope.emojiUrl);
-                    $scope.emojiUrlToClick = $scope.urlPrefix + $scope.emojiUrlToShowSmall;
+                    $scope.emojiUrlToClick = $scope.fullUrlPrefix + $scope.emojiUrlToShowSmall;
 
 
                     //update validity

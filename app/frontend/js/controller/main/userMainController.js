@@ -63,11 +63,12 @@ angular.module('tinyUrl').controller('userMainController', ['$window', '$locatio
 
         getUrls();
 
-        $scope.urlPrefix = $location.protocol() + '://' + $location.host();
+        $scope.urlPrefix =  $location.host();
         if ($location.port() != '80') {
             $scope.urlPrefix += ':' + $location.port();
         }
         $scope.urlPrefix += '/';
+        $scope.fullUrlPrefix = $location.protocol() + '://' + $scope.urlPrefix;
 
         $scope.dateFormat = 'MMM d, yyyy hh:mm a';
 
