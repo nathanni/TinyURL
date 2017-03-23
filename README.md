@@ -2,8 +2,7 @@
 shorten that long URL into a tiny URL
 
 
-# Docker
-Remember to start docker
+# Docker (Remember to start docker)
 $sudo docker-compose up --build
 
 
